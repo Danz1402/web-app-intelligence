@@ -15,10 +15,17 @@
     "files": ["dist"],
     "scripts": {
       "build": "tsc -p tsconfig.json",
-      "typecheck": "tsc -p tsconfig.json --noEmit",
-      "test": "npm run build && node --test dist/index.test.js"
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "npm run build && node --test dist/index.test.js",
+    "migrate": "node dist/cli/migrate.js",
+    "reset": "node dist/cli/reset.js"
     },
     "dependencies": {
-      "@wai/shared": "*"
+      "@wai/shared": "*",
+      "dotenv": "^16.4.7",
+      "pg": "^8.13.3"
+    },
+    "devDependencies": {
+      "@types/pg": "^8.11.11"
     }
   }

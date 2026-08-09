@@ -34,12 +34,12 @@ Only after that, continue Phase 4+.
 `[x]` 1.2 Wire package manager workspaces / path aliases  
 `[x]` 1.3 Add Node + TypeScript tooling (build, lint, test scripts)  
 `[x]` 1.4 Docker Compose: PostgreSQL (+ optional app services later)  
-`[ ]` 1.5 Env example (no secrets committed): DB URL, artifact paths  
-`[ ]` 1.6 Create `database/migrations` baseline  
-`[ ]` 1.7 Create `packages/storage` DB client + migration runner  
-`[ ]` 1.8 Migrate tables for Phase 0 entities needed for first snapshot (at least Application, Environment, DiscoverySession, State/PageInstance, Artifact)  
-`[ ]` 1.9 Artifact dirs: `artifacts/screenshots`, `artifacts/traces` (gitignored contents)  
-`[ ]` 1.10 Smoke: migrate up/down; shared package builds  
+`[x]` 1.5 Env example (no secrets committed): DB URL, artifact paths  
+`[x]` 1.6 Create `database/migrations` baseline  
+`[x]` 1.7 Create `packages/storage` DB client + migration runner  
+`[x]` 1.8 Migrate tables for Phase 0 entities needed for first snapshot (at least Application, Environment, DiscoverySession, State/PageInstance, Artifact)  
+`[x]` 1.9 Artifact dirs: `artifacts/screenshots`, `artifacts/traces` (gitignored contents)  
+`[x]` 1.10 Smoke: migrate up/down; shared package builds  
 
 **Exit:** Repo builds; Postgres schema matches contract subset for Gate 1.
 

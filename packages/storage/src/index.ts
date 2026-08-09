@@ -1,6 +1,8 @@
 import { DISCOVERY_CONTRACT_VERSION } from "@wai/shared";
 
-/** Storage package entry. DB client comes in 1.7. */
+export { createPool, getDatabaseUrl, type Db } from "./db.js";
+export { migrate } from "./migrate.js";
+
 export function getContractVersion(): string {
   return DISCOVERY_CONTRACT_VERSION;
 }
