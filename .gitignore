@@ -1,0 +1,34 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+dist/
+build/
+.next/
+coverage/
+*.tsbuildinfo
+
+# Env & secrets
+.env
+.env.*
+!.env.example
+**/auth-state/
+**/storage-state/
+**/*secret*
+**/*credentials*
+
+# Discovery artifacts (local evidence; may contain sensitive UI)
+artifacts/screenshots/
+artifacts/traces/
+artifacts/downloads/
+!artifacts/**/.gitkeep
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
+
+# Logs
+*.log
+npm-debug.log*

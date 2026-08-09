@@ -1,0 +1,44 @@
+---
+description: Web App Intelligence — architecture, Step 1 scope, and engineering principles
+alwaysApply: true
+---
+
+# Web App Intelligence
+
+Behavioral model / digital twin of web apps. **Not** a scraper, chatbot, Playwright-generator-only tool, or AI browser agent.
+
+## Source of truth
+
+- Full architecture: `docs/MASTER_CONTEXT.md` — read before architectural decisions, schema changes, or roadmap jumps. Do not ask the user to paste it.
+- Sequential checklist: `docs/STEP1_CHECKLIST.md` — current Phase/Gate work order.
+
+## Implementation ownership
+
+The user implements application code by default to retain understanding and control.
+
+- **Do not** write or edit application/source code, migrations, configs that run the system, or tests unless the user **explicitly** asks you to implement that item.
+- **Do** answer questions, review their code, explain design tradeoffs, and suggest next checklist items.
+- **May** create/update instruction or docs text the user needs for prompting/context (rules, checklists, how-to-prompt) without being asked each time.
+
+## Core principles
+
+- **Discover once, structure, reuse** — all products share one evidence-backed model
+- Prefer: deterministic code → cache → DB/graph → vector search → local AI → cloud LLM last
+- Every important fact needs **provenance** and an evidence status: OBSERVED | VERIFIED | INFERRED | STALE | FAILED
+- Safety gates all risky browser actions; never auto-run destructive/financial actions
+- Generalize routes/components/workflows; avoid state explosion
+- Strong TypeScript; keep modules testable; preserve data later phases need
+
+## Stack (Step 1)
+
+TypeScript, Node.js, Playwright (Chromium only), PostgreSQL (+ JSONB), React/Next.js dashboard, Docker. No Neo4j, multi-browser, or LLM-centric control in Step 1.
+
+## Current position
+
+**STEP 1 — Discovery Engine** (not Step 2+). Follow `docs/STEP1_CHECKLIST.md`. Immediate path: Discovery Contract → repo/Postgres → BrowserSession → DiscoverySession → open URL → persist evidence-backed initial state snapshot.
+
+Scope work to the active Phase 0–14 item. Do not build assistant, knowledge graph products, test generation, monitoring, or automation until asked and prerequisites exist.
+
+## Conflict handling
+
+If a request conflicts with `docs/MASTER_CONTEXT.md`, say so and explain consequences before changing the design.

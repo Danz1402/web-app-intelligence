@@ -1,0 +1,31 @@
+{
+    "name": "web-app-intelligence",
+    "version": "0.0.0",
+    "private": true,
+    "type": "module",
+    "workspaces": [
+      "apps/*",
+      "packages/*",
+      "workers/*"
+    ],
+    "scripts": {
+        "build": "npm run build -w @wai/shared && npm run build -w @wai/storage",
+        "typecheck": "npm run typecheck -w @wai/shared && npm run typecheck -w @wai/storage",
+        "lint": "eslint .",
+        "test": "npm run test -w @wai/shared && npm run test -w @wai/storage",
+        "verify": "npm run typecheck && npm run lint && npm run test",
+        "db:up": "docker compose up -d postgres",
+        "db:down": "docker compose down",
+        "db:logs": "docker compose logs -f postgres"
+    },
+    "engines": {
+      "node": ">=20"
+    },
+    "devDependencies": {
+      "@eslint/js": "^9.20.0",
+    "@types/node": "^22.13.4",
+    "eslint": "^9.20.0",
+    "typescript": "^5.7.3",
+    "typescript-eslint": "^8.24.0"
+    }
+  }
