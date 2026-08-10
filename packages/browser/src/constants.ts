@@ -1,0 +1,1 @@
+export const BROWSER_ENGINE = "chromium" as const;

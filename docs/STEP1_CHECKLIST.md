@@ -47,11 +47,11 @@ Only after that, continue Phase 4+.
 
 ## Phase 2 — BrowserSession
 
-`[ ]` 2.1 Add Playwright (Chromium only) in `packages/browser`  
-`[ ]` 2.2 `BrowserSession` lifecycle: launch → context → page → close  
-`[ ]` 2.3 Navigate to URL; wait for usable load (configurable)  
-`[ ]` 2.4 Capture screenshot to artifacts  
-`[ ]` 2.5 Optional: Playwright trace start/stop  
+`[x]` 2.1 Add Playwright (Chromium only) in `packages/browser`  
+`[x]` 2.2 `BrowserSession` lifecycle: launch → context → page → close  
+`[x]` 2.3 Navigate to URL; wait for usable load (configurable)  
+`[x]` 2.4 Capture screenshot to artifacts  
+`[x]` 2.5 Optional: Playwright trace start/stop  
 `[ ]` 2.6 No multi-browser; keep API small and testable  
 
 **Exit:** Code can open a URL in Chromium and produce artifacts.

@@ -9,10 +9,10 @@
       "workers/*"
     ],
     "scripts": {
-        "build": "npm run build -w @wai/shared && npm run build -w @wai/storage",
-        "typecheck": "npm run typecheck -w @wai/shared && npm run typecheck -w @wai/storage",
+      "build": "npm run build -w @wai/shared && npm run build -w @wai/storage && npm run build -w @wai/browser",
+      "typecheck": "npm run typecheck -w @wai/shared && npm run typecheck -w @wai/storage && npm run typecheck -w @wai/browser",
+      "test": "npm run test -w @wai/shared && npm run test -w @wai/storage && npm run test -w @wai/browser",
         "lint": "eslint .",
-        "test": "npm run test -w @wai/shared && npm run test -w @wai/storage",
         "verify": "npm run typecheck && npm run lint && npm run test",
         "db:up": "docker compose up -d postgres",
         "db:down": "docker compose down",
