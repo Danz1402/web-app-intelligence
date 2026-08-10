@@ -52,7 +52,7 @@ Only after that, continue Phase 4+.
 `[x]` 2.3 Navigate to URL; wait for usable load (configurable)  
 `[x]` 2.4 Capture screenshot to artifacts  
 `[x]` 2.5 Optional: Playwright trace start/stop  
-`[ ]` 2.6 No multi-browser; keep API small and testable  
+`[x]` 2.6 No multi-browser; keep API small and testable  
 
 **Exit:** Code can open a URL in Chromium and produce artifacts.
 
@@ -60,11 +60,11 @@ Only after that, continue Phase 4+.
 
 ## Phase 3 — Page / state snapshot + first DiscoverySession
 
-`[ ]` 3.1 Implement snapshot capture: URL, title, viewport, DOM-derived structured fields (per master context §12)  
-`[ ]` 3.2 Attach evidence status + provenance (session, timestamps, artifact refs)  
-`[ ]` 3.3 Implement `DiscoverySession` create/start/complete/fail in `packages/discovery`  
-`[ ]` 3.4 Persist session + initial state + artifacts via `packages/storage`  
-`[ ]` 3.5 CLI or worker entry (`workers/explorer`): `discover <url>`  
+`[x]` 3.1 Implement snapshot capture: URL, title, viewport, DOM-derived structured fields (per master context §12)  
+`[x]` 3.2 Attach evidence status + provenance (session, timestamps, artifact refs)  
+`[x]` 3.3 Implement `DiscoverySession` create/start/complete/fail in `packages/discovery`  
+`[x]` 3.4 Persist session + initial state + artifacts via `packages/storage`  
+`[x]` 3.5 CLI or worker entry (`workers/explorer`): `discover <url>`  
 `[ ]` 3.6 End-to-end: URL → session row → state row → screenshot on disk  
 
 ### Gate 1

@@ -1,6 +1,25 @@
 {
-    "name": "@wai/discovery",
-    "version": "0.0.0",
-    "private": true,
-    "type": "module"
+  "name": "@wai/discovery",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "npm run build && node --test dist/capture-snapshot.test.js dist/attach-provenance.test.js dist/discovery-session.test.js"
+  },
+  "dependencies": {
+    "@wai/browser": "*",
+    "@wai/shared": "*",
+    "playwright": "^1.50.1"
   }
+}

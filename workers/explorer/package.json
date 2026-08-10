@@ -1,6 +1,19 @@
 {
-    "name": "@wai/explorer",
-    "version": "0.0.0",
-    "private": true,
-    "type": "module"
+  "name": "@wai/explorer",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/cli.js",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "discover": "node dist/cli.js"
+  },
+  "dependencies": {
+    "@wai/browser": "*",
+    "@wai/discovery": "*",
+    "@wai/shared": "*",
+    "@wai/storage": "*",
+    "dotenv": "^16.4.7"
   }
+}

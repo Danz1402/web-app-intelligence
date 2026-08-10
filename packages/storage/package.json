@@ -16,7 +16,7 @@
     "scripts": {
       "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "test": "npm run build && node --test dist/index.test.js",
+    "test": "npm run build && node --test dist/index.test.js dist/gate1.persist.test.js",
     "migrate": "node dist/cli/migrate.js",
     "reset": "node dist/cli/reset.js"
     },

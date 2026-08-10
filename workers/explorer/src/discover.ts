@@ -1,0 +1,123 @@
+import path from "node:path";
+import { BrowserSession } from "@wai/browser";
+import {
+  DiscoverySessionController,
+  captureSnapshot,
+  toObservedState,
+} from "@wai/discovery";
+import {
+  EvidenceStatus,
+  Ids,
+  type Application,
+  type Artifact,
+  type Environment,
+} from "@wai/shared";
+import {
+  createPool,
+  getDatabaseUrl,
+  insertApplication,
+  insertArtifact,
+  insertDiscoverySession,
+  insertEnvironment,
+  insertState,
+  updateDiscoverySession,
+} from "@wai/storage";
+
+export type DiscoverResult = {
+  applicationId: string;
+  sessionId: string;
+  stateId: string;
+  artifactId: string;
+  screenshotPath: string;
+};
+
+export async function discover(url: string, repoRoot: string): Promise<DiscoverResult> {
+  const screenshotsDir = path.join(repoRoot, "artifacts/screenshots");
+  const db = createPool(getDatabaseUrl());
+  const browser = new BrowserSession({
+    headless: true,
+    screenshotsDir,
+  });
+
+  const appId = Ids.application();
+  const envId = Ids.environment();
+  const artifactId = Ids.artifact();
+
+  const app: Application = {
+    id: appId,
+    name: new URL(url).hostname,
+    baseUrl: new URL(url).origin,
+    createdAt: new Date().toISOString(),
+  };
+  const env: Environment = {
+    id: envId,
+    applicationId: appId,
+    name: "default",
+    baseUrl: app.baseUrl,
+  };
+
+  const controller = new DiscoverySessionController();
+  let session = controller.create({
+    applicationId: appId,
+    environmentId: envId,
+    startUrl: url,
+  });
+
+  try {
+    await insertApplication(db, app);
+    await insertEnvironment(db, env);
+    await insertDiscoverySession(db, session);
+
+    session = controller.start();
+    await updateDiscoverySession(db, session);
+
+    await browser.start();
+    await browser.open(url);
+
+    const screenshotPath = await browser.screenshot({
+      path: path.join(screenshotsDir, `${session.id}.png`),
+    });
+
+    const snapshot = await captureSnapshot(browser.getPage());
+    const state = toObservedState({
+      snapshot,
+      discoverySessionId: session.id,
+      artifactIds: [artifactId],
+    });
+
+    const artifact: Artifact = {
+      id: artifactId,
+      discoverySessionId: session.id,
+      kind: "screenshot",
+      path: screenshotPath,
+      createdAt: new Date().toISOString(),
+      evidenceStatus: EvidenceStatus.OBSERVED,
+    };
+
+    await insertState(db, state);
+    await insertArtifact(db, artifact);
+
+    session = controller.complete();
+    await updateDiscoverySession(db, session);
+
+    return {
+      applicationId: appId,
+      sessionId: session.id,
+      stateId: state.id,
+      artifactId,
+      screenshotPath,
+    };
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    try {
+      session = controller.fail(message);
+      await updateDiscoverySession(db, session);
+    } catch {
+      // session may not be creatable/updatable if failure was very early
+    }
+    throw err;
+  } finally {
+    await browser.close();
+    await db.end();
+  }
+}

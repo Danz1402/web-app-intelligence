@@ -3,6 +3,7 @@
     "references": [
       { "path": "./packages/shared" },
       { "path": "./packages/storage" },
-      { "path": "./packages/browser" }
+      { "path": "./packages/browser" },
+      { "path": "./packages/discovery" }
     ]
   }

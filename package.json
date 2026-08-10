@@ -9,16 +9,17 @@
       "workers/*"
     ],
     "scripts": {
-      "build": "npm run build -w @wai/shared && npm run build -w @wai/storage && npm run build -w @wai/browser",
-      "typecheck": "npm run typecheck -w @wai/shared && npm run typecheck -w @wai/storage && npm run typecheck -w @wai/browser",
-      "test": "npm run test -w @wai/shared && npm run test -w @wai/storage && npm run test -w @wai/browser",
+      "build": "npm run build -w @wai/shared && npm run build -w @wai/storage && npm run build -w @wai/browser && npm run build -w @wai/discovery",
+      "typecheck": "npm run typecheck -w @wai/shared && npm run typecheck -w @wai/storage && npm run typecheck -w @wai/browser && npm run typecheck -w @wai/discovery",
+      "test": "npm run test -w @wai/shared && npm run test -w @wai/storage && npm run test -w @wai/browser && npm run test -w @wai/discovery",
         "lint": "eslint .",
         "verify": "npm run typecheck && npm run lint && npm run test",
         "db:up": "docker compose up -d postgres",
         "db:down": "docker compose down",
         "db:logs": "docker compose logs -f postgres",
         "db:migrate": "npm run build -w @wai/storage && npm run migrate -w @wai/storage",
-        "db:reset": "npm run build -w @wai/storage && npm run reset -w @wai/storage"
+        "db:reset": "npm run build -w @wai/storage && npm run reset -w @wai/storage",
+        "discover": "npm run build -w @wai/shared && npm run build -w @wai/browser && npm run build -w @wai/discovery && npm run build -w @wai/storage && npm run build -w @wai/explorer && npm run discover -w @wai/explorer --"
     },
     "engines": {
       "node": ">=20"
