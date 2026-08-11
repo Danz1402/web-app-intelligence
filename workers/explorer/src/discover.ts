@@ -4,6 +4,8 @@ import {
   DiscoverySessionController,
   captureSnapshot,
   toObservedState,
+  detectMeaningfulElements,
+  toObservedElements,
 } from "@wai/discovery";
 import {
   EvidenceStatus,
@@ -21,6 +23,7 @@ import {
   insertEnvironment,
   insertState,
   updateDiscoverySession,
+  insertElements,
 } from "@wai/storage";
 
 export type DiscoverResult = {
@@ -95,6 +98,15 @@ export async function discover(url: string, repoRoot: string): Promise<DiscoverR
     };
 
     await insertState(db, state);
+
+    const detected = await detectMeaningfulElements(browser.getPage());
+    const elements = toObservedElements({
+    detected,
+    stateId: state.id,
+    discoverySessionId: session.id,
+    });
+    await insertElements(db, elements);
+
     await insertArtifact(db, artifact);
 
     session = controller.complete();

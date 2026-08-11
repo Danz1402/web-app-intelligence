@@ -7,7 +7,7 @@ import {
   import { BROWSER_ENGINE } from "./constants.js";
   import fs from "node:fs/promises";
 import path from "node:path";
-
+import { resolveLocator, type LocatorCandidate } from "./locators.js";
 
   export type WaitUntil = "load" | "domcontentloaded" | "networkidle" | "commit";
 
@@ -68,6 +68,28 @@ import path from "node:path";
         options.timeoutMs ?? this.options.navigationTimeoutMs ?? 30_000;
     
       await page.goto(url, { waitUntil, timeout });
+    }
+
+    async click(candidates: LocatorCandidate[]): Promise<void> {
+      const locator = resolveLocator(this.getPage(), candidates);
+      if (await locator.isDisabled().catch(() => false)) {
+        throw new Error("Refusing to click disabled element");
+      }
+      await locator.click({ timeout: 10_000 });
+    }
+    async type(candidates: LocatorCandidate[], value: string): Promise<void> {
+      const locator = resolveLocator(this.getPage(), candidates);
+      if (await locator.isDisabled().catch(() => false)) {
+        throw new Error("Refusing to type into disabled element");
+      }
+      await locator.fill(value, { timeout: 10_000 });
+    }
+    async select(candidates: LocatorCandidate[], value: string): Promise<void> {
+      const locator = resolveLocator(this.getPage(), candidates);
+      if (await locator.isDisabled().catch(() => false)) {
+        throw new Error("Refusing to select on disabled element");
+      }
+      await locator.selectOption(value, { timeout: 10_000 });
     }
 
     async screenshot(options: ScreenshotOptions = {}): Promise<string> {

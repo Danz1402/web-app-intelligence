@@ -65,22 +65,22 @@ Only after that, continue Phase 4+.
 `[x]` 3.3 Implement `DiscoverySession` create/start/complete/fail in `packages/discovery`  
 `[x]` 3.4 Persist session + initial state + artifacts via `packages/storage`  
 `[x]` 3.5 CLI or worker entry (`workers/explorer`): `discover <url>`  
-`[ ]` 3.6 End-to-end: URL → session row → state row → screenshot on disk  
+`[x]` 3.6 End-to-end: URL → session row → state row → screenshot on disk  
 
 ### Gate 1
-`[ ]` Reliably open and snapshot applications (at least 2–3 simple sites + local fixture later)
+`[x]` Reliably open and snapshot applications (at least 2–3 simple sites + local fixture later)
 
 ---
 
 ## Phase 4 — Interactive elements + locators + interaction
 
-`[ ]` 4.1 Detect meaningful interactive elements (buttons, links, inputs, etc.)  
-`[ ]` 4.2 Filter noise (hidden/disabled/decorative where appropriate)  
-`[ ]` 4.3 Persist `Element` records with provenance  
-`[ ]` 4.4 Locator strategy (stable preference order per master context §14)  
-`[ ]` 4.5 Element fingerprint / identity (§15)  
-`[ ]` 4.6 Safe action engine: click/type/select on allowed elements  
-`[ ]` 4.7 Record intended `Action` before/after attempt  
+`[x]` 4.1 Detect meaningful interactive elements (buttons, links, inputs, etc.)  
+`[x]` 4.2 Filter noise (hidden/disabled/decorative where appropriate)  
+`[x]` 4.3 Persist `Element` records with provenance  
+`[x]` 4.4 Locator strategy (stable preference order per master context §14)  
+`[x]` 4.5 Element fingerprint / identity (§15)  
+`[x]` 4.6 Safe action engine: click/type/select on allowed elements  
+`[x]` 4.7 Record intended `Action` before/after attempt  
 
 ### Gate 2
 `[ ]` Correctly identify meaningful interactive elements on known pages

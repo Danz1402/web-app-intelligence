@@ -10,6 +10,10 @@ export {
   updateDiscoverySession,
   insertState,
   insertArtifact,
+  insertElement,
+  insertElements,
+  insertAction,
+  updateAction,
 } from "./repos/gate1.js";
 
 

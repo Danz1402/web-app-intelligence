@@ -4,6 +4,8 @@ import type {
     DiscoverySession,
     Environment,
     State,
+    Element,
+    Action
   } from "@wai/shared";
   import type { Db } from "../db.js";
   
@@ -109,6 +111,64 @@ import type {
         artifact.path,
         artifact.createdAt,
         artifact.evidenceStatus,
+      ],
+    );
+  }
+
+  export async function insertElement(db: Db, element: Element): Promise<void> {
+    await db.query(
+      `INSERT INTO elements (
+         id, state_id, role, name, tag, fingerprint, locator_candidates, provenance
+       ) VALUES ($1,$2,$3,$4,$5,$6,$7::jsonb,$8::jsonb)`,
+      [
+        element.id,
+        element.stateId,
+        element.role ?? null,
+        element.name ?? null,
+        element.tag ?? null,
+        element.fingerprint ?? null,
+        JSON.stringify(element.locatorCandidates),
+        JSON.stringify(element.provenance),
+      ],
+    );
+  }
+  export async function insertElements(
+    db: Db,
+    elements: Element[],
+  ): Promise<void> {
+    for (const element of elements) {
+      await insertElement(db, element);
+    }
+  }
+  export async function insertAction(db: Db, action: Action): Promise<void> {
+    await db.query(
+      `INSERT INTO actions (id, element_id, state_id, type, payload, provenance)
+       VALUES ($1,$2,$3,$4,$5::jsonb,$6::jsonb)`,
+      [
+        action.id,
+        action.elementId ?? null,
+        action.stateId,
+        action.type,
+        action.payload ? JSON.stringify(action.payload) : null,
+        JSON.stringify(action.provenance),
+      ],
+    );
+  }
+  
+  export async function updateAction(db: Db, action: Action): Promise<void> {
+    await db.query(
+      `UPDATE actions
+       SET element_id = $2,
+           type = $3,
+           payload = $4::jsonb,
+           provenance = $5::jsonb
+       WHERE id = $1`,
+      [
+        action.id,
+        action.elementId ?? null,
+        action.type,
+        action.payload ? JSON.stringify(action.payload) : null,
+        JSON.stringify(action.provenance),
       ],
     );
   }

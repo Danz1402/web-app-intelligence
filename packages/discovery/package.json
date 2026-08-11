@@ -15,7 +15,7 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "test": "npm run build && node --test dist/capture-snapshot.test.js dist/attach-provenance.test.js dist/discovery-session.test.js"
+    "test": "npm run build && node --test dist/capture-snapshot.test.js dist/attach-provenance.test.js dist/discovery-session.test.js dist/detect-elements.test.js dist/filter-elements.test.js dist/to-elements.test.js dist/locator-candidates.test.js dist/element-fingerprint.test.js dist/record-action.test.js"
   },
   "dependencies": {
     "@wai/browser": "*",

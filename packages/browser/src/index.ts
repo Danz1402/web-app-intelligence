@@ -7,3 +7,4 @@ export {
   type ScreenshotOptions,
   type StopTraceOptions,
 } from "./browser-session.js";
+export { resolveLocator, type LocatorCandidate } from "./locators.js";
