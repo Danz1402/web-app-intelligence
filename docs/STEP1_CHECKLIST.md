@@ -83,16 +83,16 @@ Only after that, continue Phase 4+.
 `[x]` 4.7 Record intended `Action` before/after attempt  
 
 ### Gate 2
-`[ ]` Correctly identify meaningful interactive elements on known pages
+`[x]` Correctly identify meaningful interactive elements on known pages
 
 ---
 
 ## Phase 5 — State comparison + transitions
 
-`[ ]` 5.1 State signature / comparison (URL, key DOM, modals, etc. per §17)  
-`[ ]` 5.2 Detect transition after action  
-`[ ]` 5.3 Persist `Transition` (from → action → to) with evidence  
-`[ ]` 5.4 Handle no-op / failed / partial changes (`FAILED` / `OBSERVED`)  
+`[x]` 5.1 State signature / comparison (URL, key DOM, modals, etc. per §17)  
+`[x]` 5.2 Detect transition after action  
+`[x]` 5.3 Persist `Transition` (from → action → to) with evidence  
+`[x]` 5.4 Handle no-op / failed / partial changes (`FAILED` / `OBSERVED`)  
 
 ### Gate 3
 `[ ]` Perform safe actions and detect resulting state changes

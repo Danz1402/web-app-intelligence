@@ -13,6 +13,7 @@ async function main(): Promise<void> {
   const pool = createPool(getDatabaseUrl());
   try {
     await pool.query(`
+      DROP TABLE IF EXISTS transitions CASCADE;
       DROP TABLE IF EXISTS actions CASCADE;
       DROP TABLE IF EXISTS elements CASCADE;
       DROP TABLE IF EXISTS artifacts CASCADE;

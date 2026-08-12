@@ -12,7 +12,8 @@ import {
   type Environment,
   type State,
   type Element,
-  type Action
+  type Action,
+  type Transition
 } from "@wai/shared";
 import { createPool, getDatabaseUrl } from "./db.js";
 import {
@@ -25,6 +26,7 @@ import {
   insertElement,
   insertAction,
   updateAction,
+  insertTransition,
 } from "./repos/gate1.js";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
@@ -148,6 +150,38 @@ test("persist application → session → state → artifact", async () => {
     session.endedAt = new Date().toISOString();
     await updateDiscoverySession(db, session);
 
+    const toStateId = Ids.state();
+const transitionId = Ids.transition();
+const tostate: State = {
+    id: toStateId,
+    discoverySessionId: sessionId,
+    url: "https://the-internet.herokuapp.com/",
+    pathname: "/",
+    title: "The Internet",
+    snapshot: { title: "The Internet" },
+    provenance: {
+      discoverySessionId: sessionId,
+      evidenceStatus: EvidenceStatus.OBSERVED,
+      firstSeenAt: new Date().toISOString(),
+      lastSeenAt: new Date().toISOString(),
+      artifactIds: [artifactId],
+    },
+  };
+await insertState(db, tostate);
+const transition: Transition = {
+  id: transitionId,
+  fromStateId: stateId,
+  actionId: actionId,
+  toStateId: toStateId,
+  provenance: {
+    discoverySessionId: sessionId,
+    evidenceStatus: EvidenceStatus.OBSERVED,
+    firstSeenAt: new Date().toISOString(),
+    lastSeenAt: new Date().toISOString(),
+  },
+};
+await insertTransition(db, transition);
+
     const result = await db.query(
       `SELECT s.title, a.kind, ds.status, e.name AS element_name, e.tag AS element_tag
        FROM states s
@@ -163,6 +197,15 @@ test("persist application → session → state → artifact", async () => {
          FROM actions WHERE id = $1`,
         [actionId],
       );
+
+      const tr = await db.query(
+        `SELECT from_state_id, action_id, to_state_id FROM transitions WHERE id = $1`,
+        [transitionId],
+      );
+      assert.equal(tr.rowCount, 1);
+      assert.equal(tr.rows[0].from_state_id, stateId);
+      assert.equal(tr.rows[0].action_id, actionId);
+      assert.equal(tr.rows[0].to_state_id, toStateId);
 
     assert.equal(result.rowCount, 1);
     assert.equal(result.rows[0].title, "The Internet");

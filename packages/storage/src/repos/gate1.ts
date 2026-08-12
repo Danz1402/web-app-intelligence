@@ -5,7 +5,8 @@ import type {
     Environment,
     State,
     Element,
-    Action
+    Action,
+    Transition 
   } from "@wai/shared";
   import type { Db } from "../db.js";
   
@@ -169,6 +170,24 @@ import type {
         action.type,
         action.payload ? JSON.stringify(action.payload) : null,
         JSON.stringify(action.provenance),
+      ],
+    );
+  }
+
+  export async function insertTransition(
+    db: Db,
+    transition: Transition,
+  ): Promise<void> {
+    await db.query(
+      `INSERT INTO transitions (
+         id, from_state_id, action_id, to_state_id, provenance
+       ) VALUES ($1,$2,$3,$4,$5::jsonb)`,
+      [
+        transition.id,
+        transition.fromStateId,
+        transition.actionId,
+        transition.toStateId ?? null,
+        JSON.stringify(transition.provenance),
       ],
     );
   }

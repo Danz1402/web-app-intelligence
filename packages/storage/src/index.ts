@@ -14,6 +14,7 @@ export {
   insertElements,
   insertAction,
   updateAction,
+  insertTransition,
 } from "./repos/gate1.js";
 
 

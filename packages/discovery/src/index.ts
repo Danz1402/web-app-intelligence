@@ -30,3 +30,27 @@ export {
     markActionFailed,
     type CreateActionInput,
   } from "./record-action.js";
+
+  export { buildStateSignature, type StateSignature } from "./state-signature.js";
+export { compareStateSignatures, type StateDiff } from "./compare-states.js";
+
+export {
+    classifyTransition,
+    detectTransitionFromSnapshots,
+    detectTransitionAfterAction,
+    type TransitionCategory,
+    type DetectedTransition,
+  } from "./detect-transition.js";
+
+  export {
+    toObservedTransition,
+    type ToTransitionInput,
+    type TransitionRecord,
+  } from "./to-transition.js";
+
+  export {
+    resolveActionOutcome,
+    outcomeChangedState,
+    type ActionOutcome,
+    type ResolveActionOutcomeInput,
+  } from "./resolve-action-outcome.js";
