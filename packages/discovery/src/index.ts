@@ -54,3 +54,35 @@ export {
     type ActionOutcome,
     type ResolveActionOutcomeInput,
   } from "./resolve-action-outcome.js";
+
+  export { ExplorationQueue, type EnqueueFromElementsInput } from "./exploration-queue.js";
+export type { ExplorationTask, ExplorationTaskStatus } from "./exploration-types.js";
+
+export { scoreExplorationTask, type PriorityContext } from "./exploration-priority.js";
+
+export {
+    defaultCrawlLimits,
+    createCrawlBudget,
+    canEnqueueAtDepth,
+    canStartAction,
+    canRecordState,
+    isUrlAllowed,
+    recordActionStarted,
+    recordStateSeen,
+    type CrawlLimits,
+    type CrawlBudget,
+    type LimitDecision,
+  } from "./crawl-limits.js";
+
+  export {
+    restoreState,
+    restoreMatchesSignature,
+    type RestoreTarget,
+    type RestoreResult,
+  } from "./restore-state.js";
+
+  export {
+    runExplorationLoop,
+    type ExploreLoopInput,
+    type ExploreLoopSummary,
+  } from "./explore-loop.js";

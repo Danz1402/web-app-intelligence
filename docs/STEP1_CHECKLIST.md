@@ -95,17 +95,17 @@ Only after that, continue Phase 4+.
 `[x]` 5.4 Handle no-op / failed / partial changes (`FAILED` / `OBSERVED`)  
 
 ### Gate 3
-`[ ]` Perform safe actions and detect resulting state changes
+`[x]` Perform safe actions and detect resulting state changes
 
 ---
 
 ## Phase 6 — Exploration queue + restoration
 
-`[ ]` 6.1 Exploration queue of candidate actions/states (§19)  
-`[ ]` 6.2 Priority scoring (§21)  
-`[ ]` 6.3 Crawl limits: depth, max actions, time, same-origin rules (§20)  
-`[ ]` 6.4 State restoration strategy (§18) — best-effort return to prior state  
-`[ ]` 6.5 Autonomous loop: dequeue → act → observe → enqueue → stop on limits  
+`[x]` 6.1 Exploration queue of candidate actions/states (§19)  
+`[x]` 6.2 Priority scoring (§21)  
+`[x]` 6.3 Crawl limits: depth, max actions, time, same-origin rules (§20)  
+`[x]` 6.4 State restoration strategy (§18) — best-effort return to prior state  
+`[x]` 6.5 Autonomous loop: dequeue → act → observe → enqueue → stop on limits  
 
 ### Gate 4
 `[ ]` Autonomously explore multiple paths without manual scripting per click

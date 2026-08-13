@@ -46,7 +46,7 @@ test("dialog open without URL change", () => {
 
 
 test("click on example.com produces NAVIGATION", async () => {
-  const session = new BrowserSession({ headless: false });
+  const session = new BrowserSession({ headless: true });
   try {
     await session.start();
     await session.open("https://the-internet.herokuapp.com");

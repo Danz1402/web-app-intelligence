@@ -70,6 +70,16 @@ import { resolveLocator, type LocatorCandidate } from "./locators.js";
       await page.goto(url, { waitUntil, timeout });
     }
 
+    async goBack(options: OpenOptions = {}): Promise<void> {
+      const page = this.getPage();
+      const timeout =
+        options.timeoutMs ?? this.options.navigationTimeoutMs ?? 30_000;
+      await page.goBack({
+        waitUntil: options.waitUntil ?? this.options.defaultWaitUntil ?? "domcontentloaded",
+        timeout,
+      });
+    }
+
     async click(candidates: LocatorCandidate[]): Promise<void> {
       const locator = resolveLocator(this.getPage(), candidates);
       if (await locator.isDisabled().catch(() => false)) {

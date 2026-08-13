@@ -3,7 +3,7 @@ import test from "node:test";
 import { BrowserSession } from "./browser-session.js";
 
 test("click navigates via role locator on example.com", async () => {
-  const session = new BrowserSession({ headless: false });
+  const session = new BrowserSession({ headless: true });
   try {
     await session.start();
     await session.open("https://the-internet.herokuapp.com");
