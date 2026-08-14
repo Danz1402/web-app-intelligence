@@ -15,6 +15,8 @@ export {
   insertAction,
   updateAction,
   insertTransition,
+  insertNetworkRequest,
+upsertApiEndpoint,
 } from "./repos/gate1.js";
 
 

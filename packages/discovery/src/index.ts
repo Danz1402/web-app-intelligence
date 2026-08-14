@@ -82,7 +82,22 @@ export {
   } from "./restore-state.js";
 
   export {
-    runExplorationLoop,
-    type ExploreLoopInput,
-    type ExploreLoopSummary,
-  } from "./explore-loop.js";
+  runExplorationLoop,
+  type ExploreLoopInput,
+  type ExploreLoopSummary,
+} from "./explore-loop.js";
+
+export {
+  correlateNetworkRequests,
+  correlateNetworkDuringAction,
+  isLikelyApiOrNavigation,
+  type CorrelatedNetworkRequest,
+  type CorrelateNetworkDuringActionInput,
+} from "./correlate-network.js";
+
+// packages/discovery/src/index.ts
+export { redactHeaders, redactBody, REDACTED } from "./redact.js";
+
+export { persistCorrelatedNetwork } from "./persist-network.js";
+
+export { detectForms } from "./detect-forms.js";

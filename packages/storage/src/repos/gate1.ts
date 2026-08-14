@@ -6,7 +6,9 @@ import type {
     State,
     Element,
     Action,
-    Transition 
+    Transition,
+    ApiEndpoint,
+    NetworkRequest,
   } from "@wai/shared";
   import type { Db } from "../db.js";
   
@@ -188,6 +190,46 @@ import type {
         transition.actionId,
         transition.toStateId ?? null,
         JSON.stringify(transition.provenance),
+      ],
+    );
+  }
+
+  export async function insertNetworkRequest(
+    db: Db,
+    req: NetworkRequest,
+  ): Promise<void> {
+    await db.query(
+      `INSERT INTO network_requests (
+         id, discovery_session_id, action_id, method, url, status_code, provenance
+       ) VALUES ($1,$2,$3,$4,$5,$6,$7::jsonb)`,
+      [
+        req.id,
+        req.discoverySessionId,
+        req.actionId ?? null,
+        req.method,
+        req.url,
+        req.statusCode ?? null,
+        JSON.stringify(req.provenance),
+      ],
+    );
+  }
+  
+  export async function upsertApiEndpoint(
+    db: Db,
+    endpoint: ApiEndpoint,
+  ): Promise<void> {
+    await db.query(
+      `INSERT INTO api_endpoints (
+         id, application_id, method, normalized_url, provenance
+       ) VALUES ($1,$2,$3,$4,$5::jsonb)
+       ON CONFLICT (application_id, method, normalized_url)
+       DO UPDATE SET provenance = EXCLUDED.provenance`,
+      [
+        endpoint.id,
+        endpoint.applicationId,
+        endpoint.method,
+        endpoint.normalizedUrl,
+        JSON.stringify(endpoint.provenance),
       ],
     );
   }

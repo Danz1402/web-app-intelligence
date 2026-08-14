@@ -8,6 +8,7 @@ import {
   import fs from "node:fs/promises";
 import path from "node:path";
 import { resolveLocator, type LocatorCandidate } from "./locators.js";
+import type { ObservedNetworkRequest } from "./network.js";
 
   export type WaitUntil = "load" | "domcontentloaded" | "networkidle" | "commit";
 
@@ -42,6 +43,11 @@ import { resolveLocator, type LocatorCandidate } from "./locators.js";
     private context: BrowserContext | null = null;
     private page: Page | null = null;
     private tracing = false;
+
+    private capturing = false;
+    private networkLog: ObservedNetworkRequest[] = [];
+    private onRequest?: (req: import("playwright").Request) => void;
+    private onResponse?: (res: import("playwright").Response) => void;
   
     constructor(private readonly options: BrowserSessionOptions = {}) {}
   
@@ -161,6 +167,64 @@ import { resolveLocator, type LocatorCandidate } from "./locators.js";
   
     getEngine(): typeof BROWSER_ENGINE {
       return BROWSER_ENGINE;
+    }
+
+    startNetworkCapture(): void {
+      const page = this.getPage();
+      if (this.capturing) {
+        throw new Error("Network capture already started");
+      }
+      this.networkLog = [];
+      this.capturing = true;
+    
+      this.onRequest = (req) => {
+        if (!this.capturing) return;
+        this.networkLog.push({
+          url: req.url(),
+          method: req.method(),
+          resourceType: req.resourceType(),
+          startedAt: new Date().toISOString(),
+        });
+      };
+    
+      this.onResponse = (res) => {
+        if (!this.capturing) return;
+        const url = res.url();
+        const method = res.request().method();
+        const existing = [...this.networkLog]
+          .reverse()
+          .find((r) => r.url === url && r.method === method && r.statusCode === undefined);
+        if (existing) {
+          existing.statusCode = res.status();
+          existing.finishedAt = new Date().toISOString();
+        } else {
+          this.networkLog.push({
+            url,
+            method,
+            resourceType: res.request().resourceType(),
+            statusCode: res.status(),
+            startedAt: new Date().toISOString(),
+            finishedAt: new Date().toISOString(),
+          });
+        }
+      };
+    
+      page.on("request", this.onRequest);
+      page.on("response", this.onResponse);
+    }
+    
+    stopNetworkCapture(): ObservedNetworkRequest[] {
+      const page = this.page;
+      if (page && this.onRequest) page.off("request", this.onRequest);
+      if (page && this.onResponse) page.off("response", this.onResponse);
+      this.capturing = false;
+      this.onRequest = undefined;
+      this.onResponse = undefined;
+      return [...this.networkLog];
+    }
+    
+    getNetworkLog(): ObservedNetworkRequest[] {
+      return [...this.networkLog];
     }
   
     /** Close page/context/browser. Safe to call more than once. */

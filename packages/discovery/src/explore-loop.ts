@@ -1,5 +1,5 @@
 import type { BrowserSession, LocatorCandidate } from "@wai/browser";
-import type { StateId } from "@wai/shared";
+import type { StateId, ApplicationId } from "@wai/shared";
 import { Ids } from "@wai/shared";
 import { captureSnapshot } from "./capture-snapshot.js";
 import {
@@ -14,7 +14,7 @@ import {
   type CrawlBudget,
 } from "./crawl-limits.js";
 import { detectMeaningfulElements } from "./detect-elements.js";
-import { detectTransitionAfterAction } from "./detect-transition.js";
+import { detectTransitionAfterAction, type DetectedTransition } from "./detect-transition.js";
 import { ExplorationQueue } from "./exploration-queue.js";
 import { createIntendedAction } from "./record-action.js";
 import { resolveActionOutcome } from "./resolve-action-outcome.js";
@@ -23,12 +23,21 @@ import { buildStateSignature } from "./state-signature.js";
 import { toObservedElements } from "./to-elements.js";
 import { toObservedState } from "./attach-provenance.js";
 
+import { correlateNetworkDuringAction } from "./correlate-network.js";
+import type { CorrelatedNetworkRequest } from "./correlate-network.js";
+
+import type { Db } from "@wai/storage";
+import { persistCorrelatedNetwork } from "./persist-network.js";
+
+
 export type ExploreLoopInput = {
   session: BrowserSession;
   startUrl: string;
   /** Fake session id for provenance in-memory */
   discoverySessionId?: ReturnType<typeof Ids.discoverySession>;
   limits?: Partial<CrawlLimits>;
+  db: Db;
+  applicationId: ApplicationId;
 };
 
 export type ExploreLoopSummary = {
@@ -38,6 +47,8 @@ export type ExploreLoopSummary = {
   failed: number;
   skipped: number;
   stopReason: string;
+  networkEffects: number;
+  correlatedNetworkRequests: CorrelatedNetworkRequest[];
 };
 
 type KnownState = {
@@ -89,6 +100,8 @@ export async function runExplorationLoop(
       failed: 0,
       skipped: 0,
       stopReason: "initial state blocked by limits",
+      networkEffects: 0,
+      correlatedNetworkRequests: [],
     };
   }
 
@@ -111,6 +124,8 @@ export async function runExplorationLoop(
   });
 
   let stopReason = "queue empty";
+  let networkEffects = 0;
+  const allNetwork: CorrelatedNetworkRequest[] = [];
 
   while (true) {
     const canAct = canStartAction(budget, limits);
@@ -149,15 +164,34 @@ export async function runExplorationLoop(
       payload: { explorationTaskId: task.id },
     });
 
-    let detected;
+    let detected: DetectedTransition | undefined;
     let error: unknown;
+    let correlated: CorrelatedNetworkRequest[] = [];
     try {
-      detected = await detectTransitionAfterAction(
-        input.session.getPage(),
-        async () => {
-          await runTaskAction(input.session, task);
+      correlated = await correlateNetworkDuringAction({
+        session: input.session,
+        stateId: task.sourceStateId,
+        actionId: action.id,
+        action: async () => {
+          detected = await detectTransitionAfterAction(
+            input.session.getPage(),
+            async () => {
+              await runTaskAction(input.session, task);
+            },
+          );
         },
-      );
+      });
+      allNetwork.push(...correlated);
+      networkEffects += correlated.length;
+
+      if (correlated.length > 0) {
+        await persistCorrelatedNetwork({
+          db: input.db,
+          correlated: correlated.map((c) => ({ ...c, actionId: undefined })),
+          discoverySessionId,
+          applicationId: input.applicationId,
+        });
+      }
     } catch (err) {
       error = err;
     }
@@ -228,6 +262,8 @@ export async function runExplorationLoop(
     failed,
     skipped,
     stopReason,
+    networkEffects,
+    correlatedNetworkRequests: allNetwork,
   };
 }
 

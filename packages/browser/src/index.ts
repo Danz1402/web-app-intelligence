@@ -8,3 +8,5 @@ export {
   type StopTraceOptions,
 } from "./browser-session.js";
 export { resolveLocator, type LocatorCandidate } from "./locators.js";
+
+export type { ObservedNetworkRequest, NetworkCapture } from "./network.js";

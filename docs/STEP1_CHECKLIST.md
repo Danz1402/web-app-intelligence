@@ -108,19 +108,19 @@ Only after that, continue Phase 4+.
 `[x]` 6.5 Autonomous loop: dequeue → act → observe → enqueue → stop on limits  
 
 ### Gate 4
-`[ ]` Autonomously explore multiple paths without manual scripting per click
+`[x]` Autonomously explore multiple paths without manual scripting per click
 
 ---
 
 ## Phase 7 — Network / API observation
 
-`[ ]` 7.1 Capture network requests/responses during actions  
-`[ ]` 7.2 Correlate requests to triggering action/state  
-`[ ]` 7.3 Persist `NetworkRequest`; start `ApiEndpoint` normalization (§23)  
-`[ ]` 7.4 Redact sensitive headers/bodies early (even if Phase 10 expands this)  
+`[x]` 7.1 Capture network requests/responses during actions  
+`[x]` 7.2 Correlate requests to triggering action/state  
+`[x]` 7.3 Persist `NetworkRequest`; start `ApiEndpoint` normalization (§23)
+`[x]` 7.4 Redact sensitive headers/bodies early (even if Phase 10 expands this)
 
 ### Gate 5
-`[ ]` Correlate interactions with network/API effects
+`[x]` Correlate interactions with network/API effects
 
 ---
 

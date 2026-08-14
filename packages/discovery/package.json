@@ -15,11 +15,12 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "test": "npm run build && node --test dist/capture-snapshot.test.js dist/attach-provenance.test.js dist/discovery-session.test.js dist/detect-elements.test.js dist/filter-elements.test.js dist/to-elements.test.js dist/locator-candidates.test.js dist/element-fingerprint.test.js dist/record-action.test.js dist/state-signature.test.js dist/detect-transition.test.js dist/to-transition.test.js dist/resolve-action-outcome.test.js dist/exploration-queue.test.js dist/exploration-priority.test.js dist/crawl-limits.test.js dist/restore-state.test.js dist/explore-loop.test.js"
+    "test": "npm run build && node --test dist/capture-snapshot.test.js dist/attach-provenance.test.js dist/discovery-session.test.js dist/detect-elements.test.js dist/filter-elements.test.js dist/to-elements.test.js dist/locator-candidates.test.js dist/element-fingerprint.test.js dist/record-action.test.js dist/state-signature.test.js dist/detect-transition.test.js dist/to-transition.test.js dist/resolve-action-outcome.test.js dist/exploration-queue.test.js dist/exploration-priority.test.js dist/crawl-limits.test.js dist/restore-state.test.js dist/explore-loop.test.js dist/correlate-network.test.js dist/redact.test.js dist/detect-forms.test.js"
   },
   "dependencies": {
     "@wai/browser": "*",
     "@wai/shared": "*",
-    "playwright": "^1.50.1"
+    "playwright": "^1.50.1",
+    "@wai/storage": "*"
   }
 }

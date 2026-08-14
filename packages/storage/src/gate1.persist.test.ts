@@ -13,7 +13,9 @@ import {
   type State,
   type Element,
   type Action,
-  type Transition
+  type Transition,
+  type NetworkRequest,
+  type ApiEndpoint,
 } from "@wai/shared";
 import { createPool, getDatabaseUrl } from "./db.js";
 import {
@@ -27,6 +29,8 @@ import {
   insertAction,
   updateAction,
   insertTransition,
+  insertNetworkRequest,
+  upsertApiEndpoint,
 } from "./repos/gate1.js";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
@@ -42,6 +46,8 @@ test("persist application → session → state → artifact", async () => {
   const artifactId = Ids.artifact();
   const elementId = Ids.element();
   const actionId = Ids.action();
+  const networkRequestId = Ids.networkRequest();
+  const apiEndpointId = Ids.apiEndpoint();
 
   try {
     const app: Application = {
@@ -136,6 +142,36 @@ test("persist application → session → state → artifact", async () => {
       action.payload = { ...action.payload, errorMessage: "boom" };
       await updateAction(db, action);
 
+      const networkRequest: NetworkRequest = {
+        id: networkRequestId,
+        discoverySessionId: sessionId,
+        actionId: actionId,
+        method: "GET",
+        url: "https://the-internet.herokuapp.com/status_codes/200",
+        statusCode: 200,
+        provenance: {
+          discoverySessionId: sessionId,
+          evidenceStatus: EvidenceStatus.OBSERVED,
+          firstSeenAt: new Date().toISOString(),
+          lastSeenAt: new Date().toISOString(),
+        }
+      };
+      await insertNetworkRequest(db, networkRequest);
+
+      const apiEndpoint: ApiEndpoint = {
+        id: apiEndpointId,
+        applicationId: appId,
+        method: "GET",
+        normalizedUrl: "/status_codes/{id}",
+        provenance: {
+          discoverySessionId: sessionId,
+          evidenceStatus: EvidenceStatus.OBSERVED,
+          firstSeenAt: new Date().toISOString(),
+          lastSeenAt: new Date().toISOString(),
+        },
+      };
+      await upsertApiEndpoint(db, apiEndpoint);
+
     const artifact: Artifact = {
       id: artifactId,
       discoverySessionId: sessionId,
@@ -181,6 +217,23 @@ const transition: Transition = {
   },
 };
 await insertTransition(db, transition);
+
+    const networkRequestRow = await db.query(
+      `SELECT method, url, status_code FROM network_requests WHERE id = $1`,
+      [networkRequestId],
+    );
+    assert.equal(networkRequestRow.rowCount, 1);
+    assert.equal(networkRequestRow.rows[0].method, "GET");
+    assert.equal(networkRequestRow.rows[0].url, "https://the-internet.herokuapp.com/status_codes/200");
+    assert.equal(networkRequestRow.rows[0].status_code, 200);
+
+    const apiEndpointRow = await db.query(
+      `SELECT method, normalized_url FROM api_endpoints WHERE id = $1`,
+      [apiEndpointId],
+    );
+    assert.equal(apiEndpointRow.rowCount, 1);
+    assert.equal(apiEndpointRow.rows[0].method, "GET");
+    assert.equal(apiEndpointRow.rows[0].normalized_url, "/status_codes/{id}");
 
     const result = await db.query(
       `SELECT s.title, a.kind, ds.status, e.name AS element_name, e.tag AS element_tag
