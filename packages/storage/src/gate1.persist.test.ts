@@ -16,6 +16,9 @@ import {
   type Transition,
   type NetworkRequest,
   type ApiEndpoint,
+  type Form,
+  type Field,
+  type ValidationRule,
 } from "@wai/shared";
 import { createPool, getDatabaseUrl } from "./db.js";
 import {
@@ -31,6 +34,9 @@ import {
   insertTransition,
   insertNetworkRequest,
   upsertApiEndpoint,
+  insertForm,
+  insertField,
+  insertValidationRule,
 } from "./repos/gate1.js";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
@@ -48,6 +54,9 @@ test("persist application → session → state → artifact", async () => {
   const actionId = Ids.action();
   const networkRequestId = Ids.networkRequest();
   const apiEndpointId = Ids.apiEndpoint();
+  const formId = Ids.form();
+  const fieldId = Ids.field();
+  const validationRuleId = Ids.validationRule();
 
   try {
     const app: Application = {
@@ -118,6 +127,50 @@ test("persist application → session → state → artifact", async () => {
         elementId,
       ]);
       assert.equal(elCheck.rowCount, 1, "element must exist before insertAction");
+
+      const form: Form = {
+        id: formId,
+        stateId: stateId,
+        name: "login",
+        provenance: {
+          discoverySessionId: sessionId,
+          evidenceStatus: EvidenceStatus.OBSERVED,
+          firstSeenAt: new Date().toISOString(),
+          lastSeenAt: new Date().toISOString(),
+        },
+      };
+      await insertForm(db, form);
+
+      const field: Field = {
+        id: fieldId,
+        formId: formId,
+        name: "email",
+        label: "Email",
+        fieldType: "email",
+        required: true,
+        provenance: {
+          discoverySessionId: sessionId,
+          evidenceStatus: EvidenceStatus.OBSERVED,
+          firstSeenAt: new Date().toISOString(),
+          lastSeenAt: new Date().toISOString(),
+        },
+      }
+      await insertField(db, field);
+
+      const validationRule: ValidationRule = {
+        id: validationRuleId,
+        fieldId: fieldId,
+        formId: formId,
+        ruleType: "required",
+        message: "Email is required",
+        provenance: {
+          discoverySessionId: sessionId,
+          evidenceStatus: EvidenceStatus.OBSERVED,
+          firstSeenAt: new Date().toISOString(),
+          lastSeenAt: new Date().toISOString(),
+        },
+      };
+      await insertValidationRule(db, validationRule);
 
       const action: Action = {
         id: actionId,
@@ -217,6 +270,31 @@ const transition: Transition = {
   },
 };
 await insertTransition(db, transition);
+
+    const formRow = await db.query(
+      `SELECT name FROM forms WHERE id = $1`,
+      [formId],
+    );
+    assert.equal(formRow.rowCount, 1);
+    assert.equal(formRow.rows[0].name, "login");
+
+    const fieldRow = await db.query(
+      `SELECT name, label, field_type, required FROM fields WHERE id = $1`,
+      [fieldId],
+    );
+    assert.equal(fieldRow.rowCount, 1);
+    assert.equal(fieldRow.rows[0].name, "email");
+    assert.equal(fieldRow.rows[0].label, "Email");
+    assert.equal(fieldRow.rows[0].field_type, "email");
+    assert.equal(fieldRow.rows[0].required, true);
+
+    const validationRuleRow = await db.query(
+      `SELECT rule_type, message FROM validation_rules WHERE id = $1`,
+      [validationRuleId],
+    );
+    assert.equal(validationRuleRow.rowCount, 1);
+    assert.equal(validationRuleRow.rows[0].rule_type, "required");
+    assert.equal(validationRuleRow.rows[0].message, "Email is required");
 
     const networkRequestRow = await db.query(
       `SELECT method, url, status_code FROM network_requests WHERE id = $1`,

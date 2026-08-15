@@ -101,3 +101,16 @@ export { redactHeaders, redactBody, REDACTED } from "./redact.js";
 export { persistCorrelatedNetwork } from "./persist-network.js";
 
 export { detectForms } from "./detect-forms.js";
+
+export {
+  isBlockedField,
+  syntheticValueFor,
+  planSafeFormFill,
+} from "./safe-form-values.js";
+export type { PlannedFieldValue } from "./safe-form-values.js";
+
+export { validationRulesFromField } from "./detect-validation.js";
+
+export { persistFormsBundle } from "./persist-forms.js";
+
+export { toObservedForms } from "./to-forms.js";

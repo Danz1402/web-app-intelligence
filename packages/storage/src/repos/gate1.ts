@@ -9,6 +9,9 @@ import type {
     Transition,
     ApiEndpoint,
     NetworkRequest,
+    Form,
+    Field,
+    ValidationRule,
   } from "@wai/shared";
   import type { Db } from "../db.js";
   
@@ -230,6 +233,48 @@ import type {
         endpoint.method,
         endpoint.normalizedUrl,
         JSON.stringify(endpoint.provenance),
+      ],
+    );
+  }
+
+  export async function insertForm(db: Db, form: Form): Promise<void> {
+    await db.query(
+      `INSERT INTO forms (id, state_id, name, provenance)
+       VALUES ($1,$2,$3,$4::jsonb)`,
+      [form.id, form.stateId, form.name ?? null, JSON.stringify(form.provenance)],
+    );
+  }
+  
+  export async function insertField(db: Db, field: Field): Promise<void> {
+    await db.query(
+      `INSERT INTO fields (id, form_id, name, label, field_type, required, provenance)
+       VALUES ($1,$2,$3,$4,$5,$6,$7::jsonb)`,
+      [
+        field.id,
+        field.formId,
+        field.name ?? null,
+        field.label ?? null,
+        field.fieldType ?? null,
+        field.required ?? null,
+        JSON.stringify(field.provenance),
+      ],
+    );
+  }
+  
+  export async function insertValidationRule(
+    db: Db,
+    rule: ValidationRule,
+  ): Promise<void> {
+    await db.query(
+      `INSERT INTO validation_rules (id, field_id, form_id, rule_type, message, provenance)
+       VALUES ($1,$2,$3,$4,$5,$6::jsonb)`,
+      [
+        rule.id,
+        rule.fieldId ?? null,
+        rule.formId ?? null,
+        rule.ruleType,
+        rule.message ?? null,
+        JSON.stringify(rule.provenance),
       ],
     );
   }

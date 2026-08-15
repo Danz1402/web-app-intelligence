@@ -126,14 +126,14 @@ Only after that, continue Phase 4+.
 
 ## Phase 8 — Forms + validation
 
-`[ ]` 8.1 Detect forms and fields  
-`[ ]` 8.2 Options / dropdowns / dependent fields  
-`[ ]` 8.3 Safe form exploration strategy (§25)  
-`[ ]` 8.4 Validation discovery (client-side messages, required, patterns) (§26)  
-`[ ]` 8.5 Persist Form, Field, ValidationRule  
+`[x]` 8.1 Detect forms and fields  
+`[x]` 8.2 Options / dropdowns / dependent fields  
+`[x]` 8.3 Safe form exploration strategy (§25)  
+`[x]` 8.4 Validation discovery (client-side messages, required, patterns) (§26)  
+`[x]` 8.5 Persist Form, Field, ValidationRule  
 
 ### Gate 6
-`[ ]` Understand common forms and validations on Discovery Lab / sample apps
+`[x]` Understand common forms and validations on Discovery Lab / sample apps
 
 ---
 
