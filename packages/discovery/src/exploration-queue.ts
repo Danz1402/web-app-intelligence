@@ -14,6 +14,7 @@ export type EnqueueFromElementsInput = {
     defaultActionType?: string;
     exploredFingerprints?: Set<string>;
     limits?: CrawlLimits;
+    behaviorKeyByElementId?: Map<string, string>;
   };
 
 export class ExplorationQueue {
@@ -58,7 +59,10 @@ enqueueFromElements(input: EnqueueFromElementsInput): ExplorationTask[] {
         locatorCandidates: locators,
         depth,
         risk: "low" as const,
-        payload: { fingerprint: el.fingerprint },
+        payload: {
+          fingerprint: el.fingerprint,
+          behaviorKey: input.behaviorKeyByElementId?.get(el.id),
+        },
       };
   
       const priority = scoreExplorationTask(draft, {

@@ -4,6 +4,7 @@ import { Ids } from "@wai/shared";
 import { captureSnapshot } from "./capture-snapshot.js";
 import {
   canEnqueueAtDepth,
+  canRecordState,
   canStartAction,
   createCrawlBudget,
   defaultCrawlLimits,
@@ -19,7 +20,7 @@ import { ExplorationQueue } from "./exploration-queue.js";
 import { createIntendedAction } from "./record-action.js";
 import { resolveActionOutcome } from "./resolve-action-outcome.js";
 import { restoreState } from "./restore-state.js";
-import { buildStateSignature } from "./state-signature.js";
+import { buildStateSignature, StateSignature } from "./state-signature.js";
 import { toObservedElements } from "./to-elements.js";
 import { toObservedState } from "./attach-provenance.js";
 
@@ -29,6 +30,12 @@ import type { CorrelatedNetworkRequest } from "./correlate-network.js";
 import type { Db } from "@wai/storage";
 import { persistCorrelatedNetwork } from "./persist-network.js";
 
+import { resolveStateIdentity, type KnownStateSignature } from "./dedupe-states.js";
+
+import { selectElementsToExplore } from "./exploration-guardrails.js";
+import { generalizeBehavior } from "./generalize-behavior.js";
+
+import { decideExploreAction } from "./safety-engine.js";
 
 export type ExploreLoopInput = {
   session: BrowserSession;
@@ -55,7 +62,10 @@ type KnownState = {
   id: StateId;
   url: string;
   signatureHash: string;
+  signature: StateSignature;
 };
+
+type RegisterResult = { state: KnownState; isNew: boolean };
 
 /**
  * Autonomous exploration from the current page (already opened).
@@ -77,6 +87,7 @@ export async function runExplorationLoop(
   const discoverySessionId =
     input.discoverySessionId ?? Ids.discoverySession();
   const exploredFingerprints = new Set<string>();
+  const exploredBehaviorKeys = new Set<string>();
   const statesById = new Map<string, KnownState>();
 
   let completed = 0;
@@ -105,22 +116,15 @@ export async function runExplorationLoop(
     };
   }
 
-  const seedElements = toObservedElements({
-    detected: await detectMeaningfulElements(input.session.getPage()),
-    stateId: seed.id,
+  await enqueuePageElements({
+    session: input.session,
+    stateId: seed.state.id,
     discoverySessionId,
-  });
-  for (const el of seedElements) {
-    if (el.fingerprint) exploredFingerprints.add(el.fingerprint);
-  }
-  // For scoring: pass empty explored set on first enqueue so they get tried;
-  // mark fingerprints explored after COMPLETE.
-  queue.enqueueFromElements({
-    sourceStateId: seed.id,
-    elements: seedElements,
+    queue,
     depth: 0,
     limits,
     exploredFingerprints: new Set(),
+    exploredBehaviorKeys,
   });
 
   let stopReason = "queue empty";
@@ -143,6 +147,21 @@ export async function runExplorationLoop(
     const source = statesById.get(task.sourceStateId);
     if (!source) {
       queue.updateStatus(task.id, "SKIPPED");
+      skipped += 1;
+      continue;
+    }
+
+    const locatorName = task.locatorCandidates.find((c) => c.name)?.name;
+    const safety = decideExploreAction({
+      actionType: task.actionType,
+      name: locatorName,
+      behaviorKey:
+        typeof task.payload?.behaviorKey === "string"
+          ? task.payload.behaviorKey
+          : undefined,
+    });
+    if (!safety.allowed) {
+      queue.updateStatus(task.id, "BLOCKED");
       skipped += 1;
       continue;
     }
@@ -218,19 +237,19 @@ export async function runExplorationLoop(
           depth: nextDepth,
         });
         if (afterState) {
-          toStateId = afterState.id;
-          const newElements = toObservedElements({
-            detected: await detectMeaningfulElements(input.session.getPage()),
-            stateId: afterState.id,
-            discoverySessionId,
-          });
-          queue.enqueueFromElements({
-            sourceStateId: afterState.id,
-            elements: newElements,
-            depth: nextDepth,
-            limits,
-            exploredFingerprints,
-          });
+          toStateId = afterState.state.id;
+          if (afterState.isNew) {
+            await enqueuePageElements({
+              session: input.session,
+              stateId: afterState.state.id,
+              discoverySessionId,
+              queue,
+              depth: nextDepth,
+              limits,
+              exploredFingerprints,
+              exploredBehaviorKeys,
+            });
+          }
         }
       }
     }
@@ -252,6 +271,8 @@ export async function runExplorationLoop(
       completed += 1;
       const fp = task.payload?.fingerprint;
       if (typeof fp === "string") exploredFingerprints.add(fp);
+      const behaviorKey = task.payload?.behaviorKey;
+      if (typeof behaviorKey === "string") exploredBehaviorKeys.add(behaviorKey);
     }
   }
 
@@ -292,10 +313,7 @@ async function captureAndRegisterState(args: {
   limits: CrawlLimits;
   statesById: Map<string, KnownState>;
   depth: number;
-}): Promise<KnownState | undefined> {
-  const can = canStartAction(args.budget, args.limits); // runtime already checked
-  void can;
-  const { canRecordState } = await import("./crawl-limits.js");
+}): Promise<RegisterResult | undefined> {
   const stateOk = canRecordState(args.budget, args.limits);
   if (!stateOk.ok) return undefined;
 
@@ -309,10 +327,14 @@ async function captureAndRegisterState(args: {
   });
   const signatureHash = buildStateSignature(snapshot).signatureHash;
   // dedupe by signature
-  for (const existing of args.statesById.values()) {
-    if (existing.signatureHash === signatureHash) {
-      return existing;
-    }
+  const signature = buildStateSignature(snapshot);
+  const knownList: KnownStateSignature[] = [...args.statesById.values()].map((s) => ({
+    id: s.id,
+    signature: s.signature, // add signature to KnownState type
+  }));
+  const identity = resolveStateIdentity(knownList, signature);
+  if (identity.kind !== "new") {
+    return { state: args.statesById.get(identity.existing.id)!, isNew: false };
   }
 
   recordStateSeen(args.budget);
@@ -320,7 +342,45 @@ async function captureAndRegisterState(args: {
     id: state.id,
     url: state.url,
     signatureHash,
+    signature,
   };
   args.statesById.set(state.id, known);
-  return known;
+  return { state: known, isNew: true };
+}
+
+async function enqueuePageElements(args: {
+  session: BrowserSession;
+  stateId: StateId;
+  discoverySessionId: ReturnType<typeof Ids.discoverySession>;
+  queue: ExplorationQueue;
+  depth: number;
+  limits: CrawlLimits;
+  exploredFingerprints: Set<string>;
+  exploredBehaviorKeys: Set<string>;
+}): Promise<void> {
+  const detected = await detectMeaningfulElements(args.session.getPage());
+  const guarded = selectElementsToExplore({
+    detected,
+    exploredBehaviorKeys: args.exploredBehaviorKeys,
+  });
+  const elements = toObservedElements({
+    detected: guarded.detected,
+    stateId: args.stateId,
+    discoverySessionId: args.discoverySessionId,
+  });
+  const behaviorKeyByElementId = new Map<string, string>();
+  for (let i = 0; i < elements.length; i++) {
+    const el = elements[i];
+    const detectedEl = guarded.detected[i];
+    if (!el || !detectedEl) continue;
+    behaviorKeyByElementId.set(el.id, generalizeBehavior(detectedEl).key);
+  }
+  args.queue.enqueueFromElements({
+    sourceStateId: args.stateId,
+    elements,
+    depth: args.depth,
+    limits: args.limits,
+    exploredFingerprints: args.exploredFingerprints,
+    behaviorKeyByElementId,
+  });
 }

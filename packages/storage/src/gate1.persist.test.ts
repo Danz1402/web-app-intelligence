@@ -19,6 +19,7 @@ import {
   type Form,
   type Field,
   type ValidationRule,
+  RoleProfile,
 } from "@wai/shared";
 import { createPool, getDatabaseUrl } from "./db.js";
 import {
@@ -37,6 +38,7 @@ import {
   insertForm,
   insertField,
   insertValidationRule,
+  insertRoleProfile,
 } from "./repos/gate1.js";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
@@ -83,6 +85,23 @@ test("persist application → session → state → artifact", async () => {
     
 
     await insertApplication(db, app);
+
+    const roleProfileId = Ids.roleProfile();
+const role: RoleProfile = {
+  id: roleProfileId,
+  applicationId: appId,
+  name: "Employee",
+  provenance: {
+    discoverySessionId: sessionId,
+    evidenceStatus: EvidenceStatus.OBSERVED,
+    firstSeenAt: new Date().toISOString(),
+    lastSeenAt: new Date().toISOString(),
+  },
+};
+await insertRoleProfile(db, role);
+// on the session object:
+session.roleProfileId = roleProfileId;
+
     await insertEnvironment(db, env);
     await insertDiscoverySession(db, session);
 
@@ -270,6 +289,18 @@ const transition: Transition = {
   },
 };
 await insertTransition(db, transition);
+
+const roleRow = await db.query(
+  `SELECT name FROM role_profiles WHERE id = $1`,
+  [roleProfileId],
+);
+assert.equal(roleRow.rows[0].name, "Employee");
+
+const dsRole = await db.query(
+  `SELECT role_profile_id FROM discovery_sessions WHERE id = $1`,
+  [sessionId],
+);
+assert.equal(dsRole.rows[0].role_profile_id, roleProfileId);
 
     const formRow = await db.query(
       `SELECT name FROM forms WHERE id = $1`,

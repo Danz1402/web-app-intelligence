@@ -24,6 +24,8 @@ async function main(): Promise<void> {
       DROP TABLE IF EXISTS artifacts CASCADE;
       DROP TABLE IF EXISTS states CASCADE;
       DROP TABLE IF EXISTS page_instances CASCADE;
+      ALTER TABLE IF EXISTS discovery_sessions DROP CONSTRAINT IF EXISTS fk_discovery_sessions_role_profile;
+    DROP TABLE IF EXISTS role_profiles CASCADE;
       DROP TABLE IF EXISTS discovery_sessions CASCADE;
       DROP TABLE IF EXISTS environments CASCADE;
       DROP TABLE IF EXISTS applications CASCADE;

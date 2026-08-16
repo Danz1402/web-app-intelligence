@@ -7,7 +7,7 @@ import {
     type NetworkRequest,
   } from "@wai/shared";
   import type { CorrelatedNetworkRequest } from "./correlate-network.js";
-  import { normalizeApiUrl } from "./normalize-api-url.js";
+  import { normalizePathname } from "./normalize-path.js";
   
   export function toObservedNetworkRequest(input: {
     correlated: CorrelatedNetworkRequest;
@@ -43,7 +43,7 @@ import {
       id: Ids.apiEndpoint(),
       applicationId: input.applicationId,
       method: input.method.toUpperCase(),
-      normalizedUrl: normalizeApiUrl(input.url),
+      normalizedUrl: normalizePathname(input.url),
       provenance: {
         discoverySessionId: input.discoverySessionId,
         evidenceStatus: EvidenceStatus.OBSERVED,

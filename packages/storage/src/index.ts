@@ -20,6 +20,7 @@ upsertApiEndpoint,
 insertField,
 insertForm,
 insertValidationRule,
+insertRoleProfile,
 } from "./repos/gate1.js";
 
 

@@ -12,6 +12,7 @@ import type {
     Form,
     Field,
     ValidationRule,
+    RoleProfile,
   } from "@wai/shared";
   import type { Db } from "../db.js";
   
@@ -275,6 +276,22 @@ import type {
         rule.ruleType,
         rule.message ?? null,
         JSON.stringify(rule.provenance),
+      ],
+    );
+  }
+
+  export async function insertRoleProfile(
+    db: Db,
+    profile: RoleProfile,
+  ): Promise<void> {
+    await db.query(
+      `INSERT INTO role_profiles (id, application_id, name, provenance)
+       VALUES ($1,$2,$3,$4::jsonb)`,
+      [
+        profile.id,
+        profile.applicationId,
+        profile.name,
+        JSON.stringify(profile.provenance),
       ],
     );
   }

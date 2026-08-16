@@ -1,5 +1,6 @@
 import type { Page } from "playwright";
 import type { PageSnapshot } from "./snapshot-types.js";
+import { redactTextSamples } from "./redact.js";
 
 export async function captureSnapshot(page: Page): Promise<PageSnapshot> {
   const url = page.url();
@@ -41,7 +42,7 @@ export async function captureSnapshot(page: Page): Promise<PageSnapshot> {
     hash: parsed.hash,
     title,
     viewport: { width: viewport.width, height: viewport.height },
-    visibleTextSample: pageData.visibleTextSample,
+    visibleTextSample: redactTextSamples(pageData.visibleTextSample),
     dialogs: pageData.dialogs,
     capturedAt,
   };

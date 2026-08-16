@@ -139,24 +139,24 @@ Only after that, continue Phase 4+.
 
 ## Phase 9 — Dedup + generalization
 
-`[ ]` 9.1 Deduplicate near-identical states  
-`[ ]` 9.2 Route / page template detection (§30)  
-`[ ]` 9.3 Repeated component detection (§31)  
-`[ ]` 9.4 Behavioral generalization (§32)  
-`[ ]` 9.5 Guardrails against state explosion (§29)  
+`[x]` 9.1 Deduplicate near-identical states  
+`[x]` 9.2 Route / page template detection (§30)  
+`[x]` 9.3 Repeated component detection (§31)  
+`[x]` 9.4 Behavioral generalization (§32)  
+`[x]` 9.5 Guardrails against state explosion (§29)  
 
 ### Gate 7
-`[ ]` Generalize repeated pages/components; exploration stays bounded
+`[x]` Generalize repeated pages/components; exploration stays bounded
 
 ---
 
 ## Phase 10 — Auth, roles, safety, secrets
 
-`[ ]` 10.1 Auth/login support for discovery profiles (§33)  
-`[ ]` 10.2 Role profiles and role-scoped discovery (§34)  
-`[ ]` 10.3 Safety engine: block destructive/financial/irreversible actions (§35)  
-`[ ]` 10.4 Secret handling + data redaction (§36)  
-`[ ]` 10.5 Console/runtime error capture (§37)  
+`[x]` 10.1 Auth/login support for discovery profiles (§33)  
+`[x]` 10.2 Role profiles and role-scoped discovery (§34)  
+`[x]` 10.3 Safety engine: block destructive/financial/irreversible actions (§35)  
+`[x]` 10.4 Secret handling + data redaction (§36)  
+`[x]` 10.5 Console/runtime error capture (§37)  
 
 ### Gate 8
 `[ ]` Safely explore authenticated apps and different roles

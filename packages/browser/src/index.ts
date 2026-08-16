@@ -10,3 +10,5 @@ export {
 export { resolveLocator, type LocatorCandidate } from "./locators.js";
 
 export type { ObservedNetworkRequest, NetworkCapture } from "./network.js";
+
+export type { ObservedRuntimeError, ObservedRuntimeErrorKind } from "./runtime-errors.js";

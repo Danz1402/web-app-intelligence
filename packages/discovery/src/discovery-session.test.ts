@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { Ids } from "@wai/shared";
 import { DiscoverySessionController } from "./discovery-session.js";
+import { toObservedRoleProfile } from "./to-role-profile.js";
 
 test("DiscoverySession create → start → complete", () => {
   const controller = new DiscoverySessionController();
@@ -44,4 +45,13 @@ test("cannot complete from pending", () => {
     startUrl: "https://example.com",
   });
   assert.throws(() => controller.complete());
+});
+
+test("toObservedRoleProfile sets name and app", () => {
+  const p = toObservedRoleProfile({
+    name: "Admin",
+    applicationId: Ids.application(),
+    discoverySessionId: Ids.discoverySession(),
+  });
+  assert.equal(p.name, "Admin");
 });

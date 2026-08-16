@@ -20,6 +20,7 @@ coverage/
 artifacts/screenshots/
 artifacts/traces/
 artifacts/downloads/
+artifacts/auth/
 !artifacts/**/.gitkeep
 
 # OS / editor

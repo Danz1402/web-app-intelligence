@@ -114,3 +114,10 @@ export { validationRulesFromField } from "./detect-validation.js";
 export { persistFormsBundle } from "./persist-forms.js";
 
 export { toObservedForms } from "./to-forms.js";
+export { normalizePathname } from "./normalize-path.js";
+export { selectElementsToExplore } from "./exploration-guardrails.js";
+export type { GuardrailResult } from "./exploration-guardrails.js";
+
+export { decideExploreAction } from "./safety-engine.js";
+
+export { looksLikeSecret, redactString, redactTextSamples } from "./redact.js";

@@ -10,6 +10,8 @@ import path from "node:path";
 import { resolveLocator, type LocatorCandidate } from "./locators.js";
 import type { ObservedNetworkRequest } from "./network.js";
 
+import type { ObservedRuntimeError } from "./runtime-errors.js";
+
   export type WaitUntil = "load" | "domcontentloaded" | "networkidle" | "commit";
 
   
@@ -21,7 +23,9 @@ import type { ObservedNetworkRequest } from "./network.js";
     navigationTimeoutMs?: number;
     screenshotsDir?: string;
     tracesDir?: string;
+    storageStatePath?: string;
   };
+
   export type OpenOptions = {
     waitUntil?: WaitUntil;
     timeoutMs?: number;
@@ -48,6 +52,7 @@ import type { ObservedNetworkRequest } from "./network.js";
     private networkLog: ObservedNetworkRequest[] = [];
     private onRequest?: (req: import("playwright").Request) => void;
     private onResponse?: (res: import("playwright").Response) => void;
+    private runtimeErrors: ObservedRuntimeError[] = [];
   
     constructor(private readonly options: BrowserSessionOptions = {}) {}
   
@@ -61,9 +66,69 @@ import type { ObservedNetworkRequest } from "./network.js";
         headless: this.options.headless ?? true,
         channel: undefined, // use Playwright's Chromium, not system Chrome
       });
-  
-      this.context = await this.browser.newContext();
+
+      const storageState =
+      this.options.storageStatePath &&
+      (await fs
+        .access(this.options.storageStatePath)
+        .then(() => this.options.storageStatePath)
+        .catch(() => undefined));
+
+    this.context = await this.browser?.newContext(
+      storageState ? { storageState } : {},
+    );
+    
       this.page = await this.context.newPage();
+
+      this.attachRuntimeErrorListeners(this.page);
+      
+    }
+
+    private attachRuntimeErrorListeners(page: Page): void {
+      page.on("console", (msg) => {
+        if (msg.type() !== "error") return;
+        this.runtimeErrors.push({
+          kind: "console",
+          message: msg.text(),
+          observedAt: new Date().toISOString(),
+        });
+      });
+      page.on("pageerror", (err) => {
+        this.runtimeErrors.push({
+          kind: "pageerror",
+          message: err.message,
+          stack: err.stack,
+          observedAt: new Date().toISOString(),
+        });
+      });
+      page.on("requestfailed", (req) => {
+        this.runtimeErrors.push({
+          kind: "requestfailed",
+          message: req.failure()?.errorText ?? "request failed",
+          url: req.url(),
+          observedAt: new Date().toISOString(),
+        });
+      });
+    }
+    getRuntimeErrors(): ObservedRuntimeError[] {
+      return [...this.runtimeErrors];
+    }
+    drainRuntimeErrors(): ObservedRuntimeError[] {
+      const out = [...this.runtimeErrors];
+      this.runtimeErrors = [];
+      return out;
+    }
+
+    async saveStorageState(pathOverride?: string): Promise<string> {
+      const context = this.context;
+      if (!context) throw new Error("BrowserSession not started");
+      const outPath =
+        pathOverride ??
+        this.options.storageStatePath ??
+        path.join("artifacts/auth", `storage-${Date.now()}.json`);
+      await fs.mkdir(path.dirname(outPath), { recursive: true });
+      await context.storageState({ path: outPath });
+      return outPath;
     }
 
     async open(url: string, options: OpenOptions = {}): Promise<void> {
