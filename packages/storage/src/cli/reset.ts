@@ -13,6 +13,8 @@ async function main(): Promise<void> {
   const pool = createPool(getDatabaseUrl());
   try {
     await pool.query(`
+      DROP TABLE IF EXISTS verification_results CASCADE;
+      DROP TABLE IF EXISTS candidate_workflows CASCADE;
       DROP TABLE IF EXISTS validation_rules CASCADE;
       DROP TABLE IF EXISTS fields CASCADE;
       DROP TABLE IF EXISTS forms CASCADE;

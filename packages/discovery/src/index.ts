@@ -121,3 +121,9 @@ export type { GuardrailResult } from "./exploration-guardrails.js";
 export { decideExploreAction } from "./safety-engine.js";
 
 export { looksLikeSecret, redactString, redactTextSamples } from "./redact.js";
+export { selectUsefulWorkflows, isUsefulWorkflow } from "./useful-workflows.js";
+
+export { replayWorkflow, type ReplayWorkflowInput, type ReplayWorkflowResult } from "./replay-workflow.js";
+export { verifyWorkflowOutcome, type ExpectedWorkflowOutcome, type VerifyWorkflowResult } from "./verify-workflow.js";
+
+export { buildEvidenceBundle, type EvidenceBundle } from "./evidence-bundle.js";

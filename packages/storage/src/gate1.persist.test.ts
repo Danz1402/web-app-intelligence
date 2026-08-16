@@ -20,6 +20,8 @@ import {
   type Field,
   type ValidationRule,
   RoleProfile,
+  CandidateWorkflow,
+  VerificationResult,
 } from "@wai/shared";
 import { createPool, getDatabaseUrl } from "./db.js";
 import {
@@ -39,6 +41,9 @@ import {
   insertField,
   insertValidationRule,
   insertRoleProfile,
+  insertCandidateWorkflow,
+  updateCandidateWorkflowProvenance,
+  insertVerificationResult,
 } from "./repos/gate1.js";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
@@ -289,6 +294,61 @@ const transition: Transition = {
   },
 };
 await insertTransition(db, transition);
+
+const workflow: CandidateWorkflow = {
+  id: Ids.candidateWorkflow(),
+  applicationId: appId,
+  name: "CREATE_CUSTOMER",
+  actionIds: [actionId],
+  provenance: {
+    discoverySessionId: sessionId,
+    evidenceStatus: EvidenceStatus.OBSERVED,
+    firstSeenAt: new Date().toISOString(),
+    lastSeenAt: new Date().toISOString(),
+  },
+};
+await insertCandidateWorkflow(db, workflow, {
+  confidence: 1,
+  transitionIds: [transitionId],
+});
+
+const verification: VerificationResult = {
+  id: Ids.verificationResult(),
+  candidateWorkflowId: workflow.id,
+  discoverySessionId: sessionId,
+  passed: true,
+  evidenceStatus: EvidenceStatus.VERIFIED,
+  checkedAt: new Date().toISOString(),
+  details: { actualUrl: "https://example.com/done" },
+};
+await insertVerificationResult(db, verification);
+
+workflow.provenance = {
+  ...workflow.provenance,
+  evidenceStatus: EvidenceStatus.VERIFIED,
+  lastSeenAt: verification.checkedAt,
+};
+await updateCandidateWorkflowProvenance(db, workflow);
+
+const vr = await db.query(
+  `SELECT passed, evidence_status FROM verification_results WHERE id = $1`,
+  [verification.id],
+);
+assert.equal(vr.rows[0].passed, true);
+assert.equal(vr.rows[0].evidence_status, "VERIFIED");
+
+const wfProv = await db.query(
+  `SELECT provenance->>'evidenceStatus' AS status FROM candidate_workflows WHERE id = $1`,
+  [workflow.id],
+);
+assert.equal(wfProv.rows[0].status, "VERIFIED");
+
+const wf = await db.query(
+  `SELECT name, action_ids FROM candidate_workflows WHERE id = $1`,
+  [workflow.id],
+);
+assert.equal(wf.rows[0].name, "CREATE_CUSTOMER");
+assert.ok(wf.rows[0].action_ids.includes(actionId));
 
 const roleRow = await db.query(
   `SELECT name FROM role_profiles WHERE id = $1`,

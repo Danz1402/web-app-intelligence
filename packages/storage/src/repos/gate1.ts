@@ -13,6 +13,8 @@ import type {
     Field,
     ValidationRule,
     RoleProfile,
+    CandidateWorkflow,
+    VerificationResult,
   } from "@wai/shared";
   import type { Db } from "../db.js";
   
@@ -293,5 +295,56 @@ import type {
         profile.name,
         JSON.stringify(profile.provenance),
       ],
+    );
+  }
+
+  export async function insertCandidateWorkflow(
+    db: Db,
+    workflow: CandidateWorkflow,
+    evidence: Record<string, unknown> = {},
+  ): Promise<void> {
+    await db.query(
+      `INSERT INTO candidate_workflows (
+         id, application_id, name, action_ids, evidence, provenance
+       ) VALUES ($1,$2,$3,$4::jsonb,$5::jsonb,$6::jsonb)`,
+      [
+        workflow.id,
+        workflow.applicationId,
+        workflow.name,
+        JSON.stringify(workflow.actionIds),
+        JSON.stringify(evidence),
+        JSON.stringify(workflow.provenance),
+      ],
+    );
+  }
+
+  export async function insertVerificationResult(
+    db: Db,
+    result: VerificationResult,
+  ): Promise<void> {
+    await db.query(
+      `INSERT INTO verification_results (
+         id, candidate_workflow_id, discovery_session_id, passed,
+         evidence_status, checked_at, details
+       ) VALUES ($1,$2,$3,$4,$5,$6,$7::jsonb)`,
+      [
+        result.id,
+        result.candidateWorkflowId,
+        result.discoverySessionId,
+        result.passed,
+        result.evidenceStatus,
+        result.checkedAt,
+        JSON.stringify(result.details ?? {}),
+      ],
+    );
+  }
+  
+  export async function updateCandidateWorkflowProvenance(
+    db: Db,
+    workflow: CandidateWorkflow,
+  ): Promise<void> {
+    await db.query(
+      `UPDATE candidate_workflows SET provenance = $2::jsonb WHERE id = $1`,
+      [workflow.id, JSON.stringify(workflow.provenance)],
     );
   }

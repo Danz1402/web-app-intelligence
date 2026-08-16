@@ -159,27 +159,27 @@ Only after that, continue Phase 4+.
 `[x]` 10.5 Console/runtime error capture (§37)  
 
 ### Gate 8
-`[ ]` Safely explore authenticated apps and different roles
+`[x]` Safely explore authenticated apps and different roles
 
 ---
 
 ## Phase 11 — Candidate workflows
 
-`[ ]` 11.1 Infer candidate workflows from transitions (§38)  
-`[ ]` 11.2 Name/structure workflows with evidence links  
-`[ ]` 11.3 Persist `CandidateWorkflow`  
+`[x]` 11.1 Infer candidate workflows from transitions (§38)  
+`[x]` 11.2 Name/structure workflows with evidence links  
+`[x]` 11.3 Persist `CandidateWorkflow`  
 
 ### Gate 9
-`[ ]` Assemble useful workflow candidates (not just raw click chains)
+`[x]` Assemble useful workflow candidates (not just raw click chains)
 
 ---
 
 ## Phase 12 — Replay + verification
 
-`[ ]` 12.1 Replay workflow steps with stored locators/actions (§39)  
-`[ ]` 12.2 Verify expected transitions / outcomes  
-`[ ]` 12.3 Persist `VerificationResult`; upgrade evidence to VERIFIED where earned  
-`[ ]` 12.4 Evidence bundles for important claims (§40)  
+`[x]` 12.1 Replay workflow steps with stored locators/actions (§39)  
+`[x]` 12.2 Verify expected transitions / outcomes  
+`[x]` 12.3 Persist `VerificationResult`; upgrade evidence to VERIFIED where earned  
+`[x]` 12.4 Evidence bundles for important claims (§40)  
 
 ### Gate 10
 `[ ]` Replay and verify discovered workflows
