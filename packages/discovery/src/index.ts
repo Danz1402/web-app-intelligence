@@ -127,3 +127,5 @@ export { replayWorkflow, type ReplayWorkflowInput, type ReplayWorkflowResult } f
 export { verifyWorkflowOutcome, type ExpectedWorkflowOutcome, type VerifyWorkflowResult } from "./verify-workflow.js";
 
 export { buildEvidenceBundle, type EvidenceBundle } from "./evidence-bundle.js";
+
+export { buildCoverageReport, coverageFromTasks, countTasksByStatus, type CoverageReport } from "./coverage.js";

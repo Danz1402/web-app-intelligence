@@ -2,5 +2,25 @@
     "name": "@wai/dashboard",
     "version": "0.0.0",
     "private": true,
-    "type": "module"
+    "type": "module",
+    "scripts": {
+      "dev": "next dev --port 3000",
+      "build": "next build",
+      "start": "next start"
+    },
+    "dependencies": {
+      "@wai/storage": "*",
+      "dotenv": "^16.4.7",
+      "next": "^15.2.0",
+      "react": "^19.0.0",
+      "react-dom": "^19.0.0",
+      "@wai/discovery": "*",
+      "transpilePackages": ["@wai/storage", "@wai/shared", "@wai/discovery"]
+    },
+    "devDependencies": {
+      "@types/node": "^22.13.4",
+      "@types/react": "^19.0.0",
+      "@types/react-dom": "^19.0.0",
+      "typescript": "^5.7.3"
+    }
   }

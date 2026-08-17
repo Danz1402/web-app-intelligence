@@ -182,18 +182,18 @@ Only after that, continue Phase 4+.
 `[x]` 12.4 Evidence bundles for important claims (§40)  
 
 ### Gate 10
-`[ ]` Replay and verify discovered workflows
+`[x]` Replay and verify discovered workflows
 
 ---
 
 ## Phase 13 — Coverage + dashboard
 
-`[ ]` 13.1 Coverage metrics: explored / blocked / failed / unknown (§43)  
-`[ ]` 13.2 Internal discovery dashboard (Next.js) — sessions, states, elements, workflows, errors (§44)  
-`[ ]` 13.3 Evidence browser (screenshots, traces, provenance links)  
+`[x]` 13.1 Coverage metrics: explored / blocked / failed / unknown (§43)  
+`[x]` 13.2 Internal discovery dashboard (Next.js) — sessions, states, elements, workflows, errors (§44)  
+`[x]` 13.3 Evidence browser (screenshots, traces, provenance links)  
 
 ### Gate 11
-`[ ]` Clearly report what was explored, failed, blocked, and unknown
+`[x]` Clearly report what was explored, failed, blocked, and unknown
 
 ---
 

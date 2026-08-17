@@ -31,3 +31,5 @@ export function getContractVersion(): string {
   return DISCOVERY_CONTRACT_VERSION;
 }
 export type { CandidateWorkflow } from "@wai/shared";
+
+export { listDiscoverySessions, listStatesForSession, listElementsForState, listWorkflowsForApplication, listArtifactsForSession, getArtifactById, sessionActionCoverage } from "./repos/dashboard.js";
