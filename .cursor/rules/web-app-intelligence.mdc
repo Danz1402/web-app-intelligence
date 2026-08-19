@@ -11,6 +11,9 @@ Behavioral model / digital twin of web apps. **Not** a scraper, chatbot, Playwri
 
 - Full architecture: `docs/MASTER_CONTEXT.md` — read before architectural decisions, schema changes, or roadmap jumps. Do not ask the user to paste it.
 - Sequential checklist: `docs/STEP1_CHECKLIST.md` — current Phase/Gate work order.
+- Post-MVP scenario audit (after Lab L1–L11 + Phase 14 only): `docs/POST_MVP_SCENARIO_CHECKLIST.md`. Do not execute that catalog during L1 or as Step 1 scope.
+- Product destination: `docs/PRODUCT_UI_VISION.md` (analysis) and `docs/mockups/` (the screens themselves). Read the vision doc before contract/schema/persistence decisions or dashboard work; open images only for pixel detail. Mockups inform **what Step 1 must retain**; they do not override `docs/MASTER_CONTEXT.md` or the active checklist item, and they do not authorize building Step 2–6 surfaces (assistant, graph, test gen, monitoring, automation builder) early.
+- When a Step 1 choice would make a mockup screen impossible or force a re-crawl later, say so at the time and name the screen.
 
 ## Implementation ownership
 

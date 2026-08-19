@@ -20,7 +20,8 @@
         "db:migrate": "npm run build -w @wai/storage && npm run migrate -w @wai/storage",
         "db:reset": "npm run build -w @wai/storage && npm run reset -w @wai/storage",
         "discover": "npm run build -w @wai/shared && npm run build -w @wai/browser && npm run build -w @wai/discovery && npm run build -w @wai/storage && npm run build -w @wai/explorer && npm run discover -w @wai/explorer --",
-        "dashboard": "npm run build -w @wai/shared && npm run build -w @wai/storage && npm run dev -w @wai/dashboard"
+        "dashboard": "npm run build -w @wai/shared && npm run build -w @wai/storage && npm run dev -w @wai/dashboard",
+        "lab": "npm run start -w @wai/discovery-lab"
     },
     "engines": {
       "node": ">=20"

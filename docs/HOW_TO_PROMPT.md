@@ -11,7 +11,10 @@ Do **not** paste `docs/MASTER_CONTEXT.md` into every chat.
 | File | When |
 |------|------|
 | `@docs/STEP1_CHECKLIST.md` | Current phase item / “what’s next” |
+| `@docs/POST_MVP_SCENARIO_CHECKLIST.md` | After Lab + Phase 14: scenario coverage audit (not during L1) |
 | `@docs/MASTER_CONTEXT.md` | Deep architecture, schema meaning, later steps |
+| `@docs/PRODUCT_UI_VISION.md` | What the product mockups require us to retain (contract/schema/persistence decisions) |
+| `@docs/mockups/` | The mockup images themselves (pixel detail only) |
 | `@docs/contracts/` | Discovery contract details (once you add them) |
 | Specific source files | Review or debug your implementation |
 

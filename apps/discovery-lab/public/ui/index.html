@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Discovery Lab — UI</title>
+  </head>
+  <body>
+    <h1>UI</h1>
+    <p>full document · same-URL states</p>
+    <a href="/">Home</a>
+
+    <h2>Tabs</h2>
+    <div role="tablist" aria-label="Section">
+      <button type="button" role="tab" id="tab-overview" aria-selected="true" aria-controls="panel-overview">
+        Overview
+      </button>
+      <button type="button" role="tab" id="tab-details" aria-selected="false" aria-controls="panel-details">
+        Details
+      </button>
+    </div>
+    <div role="tabpanel" id="panel-overview" aria-labelledby="tab-overview">
+      Overview panel text
+    </div>
+    <div role="tabpanel" id="panel-details" aria-labelledby="tab-details" hidden>
+      Details panel text
+    </div>
+
+    <h2>Accordion</h2>
+    <button type="button" id="acc-toggle" aria-expanded="false" aria-controls="acc-body">
+      More info
+    </button>
+    <div id="acc-body" hidden>Accordion body text</div>
+
+    <h2>Modal</h2>
+    <button type="button" id="open-modal">Open note</button>
+    <div
+      id="modal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="modal-title"
+      hidden
+    >
+      <h3 id="modal-title">Quick note</h3>
+      <p>Modal body text</p>
+      <button type="button" id="close-modal">Close</button>
+    </div>
+
+    <script src="/ui.js"></script>
+  </body>
+</html>

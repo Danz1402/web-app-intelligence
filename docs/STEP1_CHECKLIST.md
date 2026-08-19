@@ -211,14 +211,39 @@ Only after that, continue Phase 4+.
 
 **Exit:** Step 1 MVP strong enough for Step 2.
 
+After Lab L1–L11 **and** this phase: coverage audit in `docs/POST_MVP_SCENARIO_CHECKLIST.md` (do not run that list during L1).
+
+---
+
+## Carry-forward data requirements (contract v0.1)
+
+Driven by `docs/PRODUCT_UI_VISION.md`. **Does not reorder the phases above.** These are things that are cheap to retain while the writers are being built and require re-crawling every application if skipped. Schedule them when convenient (a contract bump + explore-loop writes), not instead of the active item.
+
+`[ ]` Occurrence counting (times seen / executions) for cross-run aggregates and trust signals — counts, **not** a confidence percentage  
+`[ ]` Element: redacted `outerHtml` excerpt, `visible`, `enabled`, stability signal  
+`[ ]` Persist `behaviorKey` on elements (cross-run join key; currently in-memory only)  
+`[ ]` NetworkRequest: `durationMs` + redacted request/response bodies  
+`[ ]` Per-state screenshots from the explore loop (not just one per session)  
+`[ ]` Write `dom_snapshot` artifacts (kind already exists, nothing produces it)  
+`[ ]` Append-only discovery event log (also improves Gate 11 reporting)  
+`[ ]` Persist one coverage snapshot per finished session (trends cannot be backfilled)  
+`[ ]` Crawl stats on the session: duration, requests made, avg response time  
+`[ ]` `roleProfileId` set on every session (permission views depend on it)  
+`[ ]` Politeness: robots.txt + rate limiting — fold into 14.8
+
 ---
 
 ## Parallel track — Discovery Lab (recommended from Gate 1 onward)
 
+> Naming: **Discovery Lab** = this synthetic benchmark app (`MASTER_CONTEXT` §45). The dashboard surface in the mockups is called **Coverage**, not Discovery Lab.
+
+
 Build a controlled app with known ground truth (master context §45).
 
-`[ ]` L1 Normal links + SPA navigation  
-`[ ]` L2 Modals, tabs, accordions  
+`[x]` L1 Normal links + SPA navigation  
+`[x]` L2 Modals, tabs, accordions  
+`[x]` L3 Forms + validation  
+`[ ]` L4 Tables, pagination, filters  
 `[ ]` L3 Forms + validation  
 `[ ]` L4 Tables, pagination, filters  
 `[ ]` L5 Dropdown dependencies + dynamic rendering  
@@ -246,6 +271,7 @@ Build a controlled app with known ground truth (master context §45).
 
 ## After Step 1 (reminder only)
 
+0. **Coverage audit** — `docs/POST_MVP_SCENARIO_CHECKLIST.md` (classify lab/engine gaps; do not build the whole catalog)
 1. **Step 2** — Knowledge graph from discovery records  
 2. **Step 3** — Search / docs / initial assistant  
 3. **Step 4** — Playwright test generation  

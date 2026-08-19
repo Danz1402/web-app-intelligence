@@ -1,0 +1,37 @@
+{
+    "version": 1,
+    "slice": "L3",
+    "states": [
+      { "pathname": "/", "title": "Discovery Lab — Home" },
+      { "pathname": "/about", "title": "Discovery Lab — About" },
+      { "pathname": "/contact", "title": "Discovery Lab — Contact" },
+      { "pathname": "/dashboard", "title": "Discovery Lab — Dashboard" },
+      { "pathname": "/settings", "title": "Discovery Lab — Settings" },
+      { "pathname": "/ui", "title": "Discovery Lab — UI", "variant": "default" },
+      { "pathname": "/ui", "title": "Discovery Lab — UI", "variant": "details-tab" },
+      { "pathname": "/ui", "title": "Discovery Lab — UI", "variant": "accordion-open" },
+      { "pathname": "/ui", "title": "Discovery Lab — UI", "variant": "modal-open" },
+      { "pathname": "/form", "title": "Discovery Lab — Form", "variant": "default" },
+      { "pathname": "/form", "title": "Discovery Lab — Form", "variant": "invalid" },
+      { "pathname": "/form", "title": "Discovery Lab — Form", "variant": "success" }
+    ],
+    "forms": [
+      {
+        "pathname": "/form",
+        "name": "signup",
+        "fields": ["name", "email", "code", "qty", "plan", "color", "notes", "password"],
+        "validation": [
+          { "field": "name", "ruleType": "required" },
+          { "field": "name", "ruleType": "minLength", "message": "2" },
+          { "field": "email", "ruleType": "required" },
+          { "field": "email", "ruleType": "type:email" },
+          { "field": "code", "ruleType": "pattern", "message": "LAB-[0-9]{3}" },
+          { "field": "qty", "ruleType": "min", "message": "1" },
+          { "field": "qty", "ruleType": "max", "message": "10" },
+          { "field": "qty", "ruleType": "type:number" },
+          { "field": "password", "ruleType": "required" }
+        ]
+      }
+    ],
+    "notes": "About/Contact are full document loads. Dashboard/Settings are pushState only. /ui variants share pathname. /form is a full document. Password is required but must not be auto-filled."
+  }
