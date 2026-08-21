@@ -13,7 +13,30 @@
       { "pathname": "/ui", "title": "Discovery Lab — UI", "variant": "modal-open" },
       { "pathname": "/form", "title": "Discovery Lab — Form", "variant": "default" },
       { "pathname": "/form", "title": "Discovery Lab — Form", "variant": "invalid" },
-      { "pathname": "/form", "title": "Discovery Lab — Form", "variant": "success" }
+      { "pathname": "/form", "title": "Discovery Lab — Form", "variant": "success" },
+      { "pathname": "/customers", "title": "Discovery Lab — Customers", "variant": "default" },
+{ "pathname": "/customers", "title": "Discovery Lab — Customers", "variant": "page-2" },
+{ "pathname": "/customers", "title": "Discovery Lab — Customers", "variant": "filter-active" },
+{ "pathname": "/deps", "title": "Discovery Lab — Deps", "variant": "default" },
+{ "pathname": "/deps", "title": "Discovery Lab — Deps", "variant": "country-us" },
+{ "pathname": "/deps", "title": "Discovery Lab — Deps", "variant": "country-ca" },
+{ "pathname": "/deps", "title": "Discovery Lab — Deps", "variant": "company-on" },
+{ "pathname": "/items", "title": "Discovery Lab — Items", "variant": "default" },
+{ "pathname": "/items", "title": "Discovery Lab — Items", "variant": "outer-modal" },
+{ "pathname": "/items", "title": "Discovery Lab — Items", "variant": "nested-modal" },
+{ "pathname": "/items/1", "title": "Discovery Lab — Item 1" },
+{ "pathname": "/items/2", "title": "Discovery Lab — Item 2" },
+{ "pathname": "/items/3", "title": "Discovery Lab — Item 3" },
+{ "pathname": "/files", "title": "Discovery Lab — Files", "variant": "default" },
+{ "pathname": "/files", "title": "Discovery Lab — Files", "variant": "upload-success" },
+{ "pathname": "/roles", "title": "Discovery Lab — Roles", "variant": "signed-out" },
+{ "pathname": "/roles", "title": "Discovery Lab — Roles", "variant": "employee" },
+{ "pathname": "/roles", "title": "Discovery Lab — Roles", "variant": "admin" },
+{ "pathname": "/errors", "title": "Discovery Lab — Errors", "variant": "default" },
+{ "pathname": "/errors", "title": "Discovery Lab — Errors", "variant": "api-error" },
+{ "pathname": "/scroll", "title": "Discovery Lab — Scroll", "variant": "default" },
+{ "pathname": "/scroll", "title": "Discovery Lab — Scroll", "variant": "loaded" },
+{ "pathname": "/embed", "title": "Discovery Lab — Embed" }
     ],
     "forms": [
       {
@@ -31,7 +54,76 @@
           { "field": "qty", "ruleType": "type:number" },
           { "field": "password", "ruleType": "required" }
         ]
+      },
+      {
+        "pathname": "/deps",
+        "name": "deps",
+        "fields": ["country", "state", "province", "hasCompany", "companyName"],
+        "dependencies": [
+          { "field": "country", "controls": ["state", "province"] },
+          { "field": "hasCompany", "controls": ["companyName"] }
+        ]
       }
     ],
+    "tables": [
+  {
+    "pathname": "/customers",
+    "rowCount": 6,
+    "pageSize": 3,
+    "repeatedAction": "View {name}"
+  }
+],
+"pageTemplates": [
+  { "pattern": "/items/{id}", "instances": ["/items/1", "/items/2", "/items/3"] }
+],
+"files": [
+  {
+  "pathname": "/files",
+  "directDownload": "/api/download/report.txt",
+  "generatedDownload": "generated.csv",
+  "uploadEndpoint": "/api/upload"
+}],
+"roles": [
+  {
+  "pathname": "/roles",
+  "cookie": "lab-role",
+  "profiles": {
+    "employee": ["View reports", "Export data"],
+    "admin": ["View reports", "Export data", "Delete all", "Manage users"]
+  }
+}],
+"errors": [
+  {
+  "pathname": "/errors",
+  "api": {
+    "endpoint": "/api/data",
+    "method": "GET",
+    "status": 500,
+    "visibleMessage": "Server error (500)"
+  },
+  "client": {
+    "action": "Trigger client error",
+    "message": "Lab client error"
+  }
+}],
+"scroll": [{
+  "pathname": "/scroll",
+  "initialItems": 10,
+  "maxItems": 20
+}],
+"embed": [{
+  "pathname": "/embed",
+  "iframeSrc": "/embed/frame.html",
+  "iframeLink": "Home from iframe"
+}],
+"expectedCounts": [{
+  "stateEntries": 35,
+  "uniquePathnames": 18,
+  "forms": 2,
+  "formFields": { "/form": 8, "/deps": 5 },
+  "validationRules": { "/form": 9 },
+  "pageTemplates": 1,
+  "pageTemplateInstances": 3
+}],
     "notes": "About/Contact are full document loads. Dashboard/Settings are pushState only. /ui variants share pathname. /form is a full document. Password is required but must not be auto-filled."
   }

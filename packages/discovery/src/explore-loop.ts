@@ -37,6 +37,11 @@ import { generalizeBehavior } from "./generalize-behavior.js";
 
 import { decideExploreAction } from "./safety-engine.js";
 
+import type { State } from "@wai/shared";
+import { insertAction, insertTransition, updateAction, insertElements } from "@wai/storage";
+import { persistExploredState } from "./persist-explored-state.js";
+import type { PageTemplate } from "@wai/shared";
+
 export type ExploreLoopInput = {
   session: BrowserSession;
   startUrl: string;
@@ -89,6 +94,7 @@ export async function runExplorationLoop(
   const exploredFingerprints = new Set<string>();
   const exploredBehaviorKeys = new Set<string>();
   const statesById = new Map<string, KnownState>();
+  const knownTemplates: PageTemplate[] = [];
 
   let completed = 0;
   let failed = 0;
@@ -102,6 +108,9 @@ export async function runExplorationLoop(
     limits,
     statesById,
     depth: 0,
+    db: input.db,
+    applicationId: input.applicationId,
+knownTemplates,
   });
   if (!seed) {
     return {
@@ -125,6 +134,7 @@ export async function runExplorationLoop(
     limits,
     exploredFingerprints: new Set(),
     exploredBehaviorKeys,
+    db: input.db,
   });
 
   let stopReason = "queue empty";
@@ -168,7 +178,10 @@ export async function runExplorationLoop(
 
     recordActionStarted(budget);
 
-    const restored = await restoreState(input.session, { url: source.url });
+    const restored = await restoreState(input.session, {
+      url: source.url,
+      signatureHash: source.signatureHash,
+    });
     if (!restored.ok) {
       queue.updateStatus(task.id, "FAILED");
       failed += 1;
@@ -182,6 +195,8 @@ export async function runExplorationLoop(
       elementId: task.elementId,
       payload: { explorationTaskId: task.id },
     });
+
+    await insertAction(input.db, action);
 
     let detected: DetectedTransition | undefined;
     let error: unknown;
@@ -235,6 +250,9 @@ export async function runExplorationLoop(
           limits,
           statesById,
           depth: nextDepth,
+          db: input.db,
+          applicationId: input.applicationId,
+knownTemplates,
         });
         if (afterState) {
           toStateId = afterState.state.id;
@@ -248,6 +266,7 @@ export async function runExplorationLoop(
               limits,
               exploredFingerprints,
               exploredBehaviorKeys,
+              db: input.db,
             });
           }
         }
@@ -262,6 +281,11 @@ export async function runExplorationLoop(
       detected,
       toStateId,
     });
+
+    await updateAction(input.db, outcome.action);
+    if (outcome.kind === "noop" || outcome.kind === "transitioned") {
+      await insertTransition(input.db, outcome.transition);
+    }
 
     if (outcome.kind === "failed") {
       queue.updateStatus(task.id, "FAILED");
@@ -313,6 +337,9 @@ async function captureAndRegisterState(args: {
   limits: CrawlLimits;
   statesById: Map<string, KnownState>;
   depth: number;
+  db: Db;
+  applicationId: ApplicationId;
+knownTemplates: PageTemplate[];
 }): Promise<RegisterResult | undefined> {
   const stateOk = canRecordState(args.budget, args.limits);
   if (!stateOk.ok) return undefined;
@@ -332,12 +359,23 @@ async function captureAndRegisterState(args: {
     id: s.id,
     signature: s.signature, // add signature to KnownState type
   }));
+
+
+
   const identity = resolveStateIdentity(knownList, signature);
   if (identity.kind !== "new") {
     return { state: args.statesById.get(identity.existing.id)!, isNew: false };
   }
-
   recordStateSeen(args.budget);
+  await persistExploredState({
+    db: args.db,
+    session: args.session,
+    state,
+    discoverySessionId: args.discoverySessionId,
+    applicationId: args.applicationId,
+  knownTemplates: args.knownTemplates,
+  });
+
   const known: KnownState = {
     id: state.id,
     url: state.url,
@@ -357,6 +395,7 @@ async function enqueuePageElements(args: {
   limits: CrawlLimits;
   exploredFingerprints: Set<string>;
   exploredBehaviorKeys: Set<string>;
+  db: Db;
 }): Promise<void> {
   const detected = await detectMeaningfulElements(args.session.getPage());
   const guarded = selectElementsToExplore({
@@ -368,6 +407,7 @@ async function enqueuePageElements(args: {
     stateId: args.stateId,
     discoverySessionId: args.discoverySessionId,
   });
+  await insertElements(args.db, elements);
   const behaviorKeyByElementId = new Map<string, string>();
   for (let i = 0; i < elements.length; i++) {
     const el = elements[i];

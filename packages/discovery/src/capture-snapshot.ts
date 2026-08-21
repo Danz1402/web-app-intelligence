@@ -11,9 +11,41 @@ export async function captureSnapshot(page: Page): Promise<PageSnapshot> {
 
   const pageData = await page.evaluate(() => {
     const sample: string[] = [];
+
+
+    
+    function isVisible(el: Element) {
+      if (!(el instanceof HTMLElement)) return false;
+      if (el.hidden) return false;
+      const style = window.getComputedStyle(el);
+      if (style.visibility === "hidden" || style.display === "none") return false;
+      const rect = el.getBoundingClientRect();
+      return rect.width > 0 && rect.height > 0;
+    }
+    
+    function isVisibleTextNode(node: Node) {
+      let el = node.parentElement;
+      while (el) {
+        if (el.hidden) return false;
+        const style = window.getComputedStyle(el);
+        if (style.visibility === "hidden" || style.display === "none") return false;
+        el = el.parentElement;
+      }
+      return true;
+    }
+
+
     const walker = document.createTreeWalker(
       document.body ?? document.documentElement,
       NodeFilter.SHOW_TEXT,
+      {
+        acceptNode(node) {
+          if (!isVisibleTextNode(node)) {
+            return NodeFilter.FILTER_REJECT; // skip this text node
+          }
+          return NodeFilter.FILTER_ACCEPT;   // include it
+        },
+      },
     );
     while (walker.nextNode() && sample.length < 20) {
       const text = walker.currentNode.textContent?.trim() ?? "";
@@ -22,9 +54,10 @@ export async function captureSnapshot(page: Page): Promise<PageSnapshot> {
       }
     }
 
+
     const dialogs = Array.from(
       document.querySelectorAll('[role="dialog"], [role="alertdialog"], dialog'),
-    ).map((el) => ({
+    ).filter(isVisible).map((el) => ({
       role: el.getAttribute("role") ?? el.tagName.toLowerCase(),
       name:
         el.getAttribute("aria-label") ??

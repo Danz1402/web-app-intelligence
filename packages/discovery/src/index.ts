@@ -129,3 +129,4 @@ export { verifyWorkflowOutcome, type ExpectedWorkflowOutcome, type VerifyWorkflo
 export { buildEvidenceBundle, type EvidenceBundle } from "./evidence-bundle.js";
 
 export { buildCoverageReport, coverageFromTasks, countTasksByStatus, type CoverageReport } from "./coverage.js";
+export { persistExploredState } from "./persist-explored-state.js";

@@ -6,6 +6,8 @@ import {
   toObservedState,
   detectMeaningfulElements,
   toObservedElements,
+  runExplorationLoop,
+  ExploreLoopSummary,
 } from "@wai/discovery";
 import {
   EvidenceStatus,
@@ -32,6 +34,7 @@ export type DiscoverResult = {
   stateId: string;
   artifactId: string;
   screenshotPath: string;
+  explore?: ExploreLoopSummary;
 };
 
 export async function discover(url: string, repoRoot: string): Promise<DiscoverResult> {
@@ -77,48 +80,52 @@ export async function discover(url: string, repoRoot: string): Promise<DiscoverR
     await browser.start();
     await browser.open(url);
 
-    const screenshotPath = await browser.screenshot({
-      path: path.join(screenshotsDir, `${session.id}.png`),
-    });
 
-    const snapshot = await captureSnapshot(browser.getPage());
-    const state = toObservedState({
-      snapshot,
-      discoverySessionId: session.id,
-      artifactIds: [artifactId],
-    });
 
-    const artifact: Artifact = {
-      id: artifactId,
-      discoverySessionId: session.id,
-      kind: "screenshot",
-      path: screenshotPath,
-      createdAt: new Date().toISOString(),
-      evidenceStatus: EvidenceStatus.OBSERVED,
-    };
+    const hostname = new URL(url).hostname;
 
-    await insertState(db, state);
+const summary = await runExplorationLoop({
+  session: browser,
+  startUrl: url,
+  discoverySessionId: session.id,
+  db,
+  applicationId: appId,
+  limits: {
+    maxDepth: 6,
+    maxActions: 200,
+    maxStates: 80,
+    maxRuntimeMs: 600_000,
+    allowedDomains: [hostname, "127.0.0.1", "localhost"],
+  },
+});
 
-    const detected = await detectMeaningfulElements(browser.getPage());
-    const elements = toObservedElements({
-    detected,
-    stateId: state.id,
-    discoverySessionId: session.id,
-    });
-    await insertElements(db, elements);
+const screenshotPath = await browser.screenshot({
+  path: path.join(screenshotsDir, `${session.id}.png`),
+});
 
-    await insertArtifact(db, artifact);
+const artifact: Artifact = {
+  id: artifactId,
+  discoverySessionId: session.id,
+  kind: "screenshot",
+  path: screenshotPath,
+  createdAt: new Date().toISOString(),
+  evidenceStatus: EvidenceStatus.OBSERVED,
+};
+await insertArtifact(db, artifact);
 
-    session = controller.complete();
-    await updateDiscoverySession(db, session);
+session = controller.complete();
+await updateDiscoverySession(db, session);
 
-    return {
-      applicationId: appId,
-      sessionId: session.id,
-      stateId: state.id,
-      artifactId,
-      screenshotPath,
-    };
+return {
+  applicationId: appId,
+  sessionId: session.id,
+  stateId: "", // optional: drop or set from summary later
+  artifactId,
+  screenshotPath,
+  explore: summary,
+};
+
+
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     try {

@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Discovery Lab — Customers</title>
+  </head>
+  <body>
+    <h1>Customers</h1>
+    <p id="summary">Page 1 of 2 · All statuses</p>
+    <a href="/">Home</a>
+
+    <label>
+      Status
+      <select id="status-filter">
+        <option value="all">All</option>
+        <option value="active">Active</option>
+        <option value="inactive">Inactive</option>
+      </select>
+    </label>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="rows"></tbody>
+    </table>
+
+    <button type="button" id="prev-page" disabled>Previous</button>
+    <button type="button" id="next-page">Next</button>
+
+    <script src="/customers.js"></script>
+  </body>
+</html>

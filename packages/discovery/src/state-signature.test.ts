@@ -45,3 +45,24 @@ test("dialog open without URL change → changed", () => {
   assert.equal(diff.urlChanged, false);
   assert.equal(diff.dialogsChanged, true);
 });
+
+test("visible text change on same URL → changed signature", () => {
+  const before = buildStateSignature(
+    snap({ pathname: "/ui", visibleTextSample: ["Overview panel text"] }),
+  );
+  const after = buildStateSignature(
+    snap({ pathname: "/ui", visibleTextSample: ["Details panel text"] }),
+  );
+  assert.notEqual(before.signatureHash, after.signatureHash);
+  assert.equal(compareStateSignatures(before, after).changed, true);
+});
+
+test("hidden dialog in DOM does not affect signature until visible", () => {
+  const closed = buildStateSignature(snap({ dialogs: [] }));
+  const hiddenInDom = buildStateSignature(snap({ dialogs: [] })); // capture fix: hidden filtered out
+  const open = buildStateSignature(
+    snap({ dialogs: [{ role: "dialog", name: "modal-title" }] }),
+  );
+  assert.equal(closed.signatureHash, hiddenInDom.signatureHash);
+  assert.notEqual(closed.signatureHash, open.signatureHash);
+});

@@ -54,7 +54,18 @@ export async function restoreState(
     await session.open(target.url);
     await dismissDialogsBestEffort(page);
     if (samePageUrl(page.url(), target.url)) {
-      return { ok: true, method: "goto_url" };
+      await dismissDialogsBestEffort(page);
+      if (target.signatureHash) {
+        const snap = await captureSnapshot(page);
+        const current = buildStateSignature(snap);
+        if (current.signatureHash !== target.signatureHash) {
+          // Same URL, wrong variant (e.g. wrong tab) — hard reload to known URL
+          await session.open(target.url);
+          await dismissDialogsBestEffort(page);
+          return { ok: true, method: "goto_url" };
+        }
+      }
+      return { ok: true, method: "already_there" };
     }
     return {
       ok: false,

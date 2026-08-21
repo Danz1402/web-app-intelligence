@@ -8,9 +8,9 @@ Work top to bottom. Do not skip gates. Do not start Step 2+ until Gate 11 passes
 
 ## Immediate first target
 
-`[ ]` Given a URL: start `DiscoverySession` → Chromium → open app → capture initial state → persist evidence-backed snapshot (+ optional screenshot/trace).
+`[x]` Given a URL: start `DiscoverySession` → Chromium → open app → capture initial state → persist evidence-backed snapshot (+ optional screenshot/trace).
 
-Only after that, continue Phase 4+.
+`[x]` **Integration (post–Gate 11):** `discover` runs `runExplorationLoop` and persists states, elements, actions, transitions, and forms (lab baseline: 16/18 pathnames on first crawl).
 
 ---
 
@@ -203,7 +203,7 @@ Only after that, continue Phase 4+.
 `[ ]` 14.2 Iframes (as needed)  
 `[ ]` 14.3 Uploads / downloads  
 `[ ]` 14.4 Infinite scrolling  
-`[ ]` 14.5 Improved dynamic components  
+`[x]` 14.5 Improved dynamic components  
 `[ ]` 14.6 Parallel exploration (if justified)  
 `[ ]` 14.7 Crawl recovery / resume  
 `[ ]` 14.8 Performance + security hardening  
@@ -243,16 +243,14 @@ Build a controlled app with known ground truth (master context §45).
 `[x]` L1 Normal links + SPA navigation  
 `[x]` L2 Modals, tabs, accordions  
 `[x]` L3 Forms + validation  
-`[ ]` L4 Tables, pagination, filters  
-`[ ]` L3 Forms + validation  
-`[ ]` L4 Tables, pagination, filters  
-`[ ]` L5 Dropdown dependencies + dynamic rendering  
-`[ ]` L6 Nested dialogs + repeated routes/rows  
-`[ ]` L7 Downloads / uploads  
-`[ ]` L8 Role-based UI  
-`[ ]` L9 API failures + client errors  
-`[ ]` L10 Later: infinite scroll, iframes  
-`[ ]` L11 Maintain ground-truth counts; score discovery output against them  
+`[x]` L4 Tables, pagination, filters  
+`[x]` L5 Dropdown dependencies + dynamic rendering  
+`[x]` L6 Nested dialogs + repeated routes/rows  
+`[x]` L7 Downloads / uploads  
+`[x]` L8 Role-based UI  
+`[x]` L9 API failures + client errors  
+`[x]` L10 Later: infinite scroll, iframes  
+`[x]` L11 Maintain ground-truth counts; score discovery output against them  
 
 ---
 

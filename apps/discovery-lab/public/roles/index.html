@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Discovery Lab — Roles</title>
+  </head>
+  <body>
+    <h1>Roles</h1>
+    <p id="role-label">Signed out</p>
+    <a href="/">Home</a>
+
+    <div id="signed-out">
+      <button type="button" data-role="employee">Sign in as Employee</button>
+      <button type="button" data-role="admin">Sign in as Admin</button>
+    </div>
+
+    <div id="signed-in" hidden>
+      <button type="button" id="view-reports">View reports</button>
+      <button type="button" id="export-data">Export data</button>
+      <button type="button" id="delete-all" hidden>Delete all</button>
+      <button type="button" id="manage-users" hidden>Manage users</button>
+      <button type="button" id="sign-out">Sign out</button>
+    </div>
+
+    <script src="/roles.js"></script>
+  </body>
+</html>

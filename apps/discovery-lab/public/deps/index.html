@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Discovery Lab — Deps</title>
+  </head>
+  <body>
+    <h1>Dependencies</h1>
+    <p>full document · conditional fields</p>
+    <a href="/">Home</a>
+
+    <form id="deps" name="deps">
+      <p>
+        <label for="country">Country</label>
+        <select id="country" name="country" aria-controls="region-panel">
+          <option value="">Choose</option>
+          <option value="us">United States</option>
+          <option value="ca">Canada</option>
+        </select>
+      </p>
+
+      <div id="region-panel">
+        <p id="state-wrap" hidden>
+          <label for="state">State</label>
+          <select id="state" name="state">
+            <option value="">Choose state</option>
+            <option value="ny">New York</option>
+            <option value="ca">California</option>
+          </select>
+        </p>
+        <p id="province-wrap" hidden>
+          <label for="province">Province</label>
+          <select id="province" name="province">
+            <option value="">Choose province</option>
+            <option value="on">Ontario</option>
+            <option value="bc">British Columbia</option>
+          </select>
+        </p>
+      </div>
+
+      <p>
+        <label>
+          <input type="checkbox" id="has-company" name="hasCompany" aria-controls="company-panel" />
+          Has company
+        </label>
+      </p>
+
+      <div id="company-panel" hidden>
+        <p>
+          <label for="company-name">Company name</label>
+          <input id="company-name" name="companyName" type="text" />
+        </p>
+      </div>
+    </form>
+
+    <script src="/deps.js"></script>
+  </body>
+</html>

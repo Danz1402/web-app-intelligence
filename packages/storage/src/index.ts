@@ -24,6 +24,8 @@ insertRoleProfile,
 insertCandidateWorkflow,
 insertVerificationResult,
 updateCandidateWorkflowProvenance,
+insertPageTemplate,
+insertPageInstance,
 } from "./repos/gate1.js";
 
 

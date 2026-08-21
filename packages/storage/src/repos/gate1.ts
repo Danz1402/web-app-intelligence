@@ -15,6 +15,8 @@ import type {
     RoleProfile,
     CandidateWorkflow,
     VerificationResult,
+    PageTemplate,
+    PageInstance,
   } from "@wai/shared";
   import type { Db } from "../db.js";
   
@@ -346,5 +348,22 @@ import type {
     await db.query(
       `UPDATE candidate_workflows SET provenance = $2::jsonb WHERE id = $1`,
       [workflow.id, JSON.stringify(workflow.provenance)],
+    );
+  }
+
+  export async function insertPageTemplate(db: Db, t: PageTemplate): Promise<void> {
+    await db.query(
+      `INSERT INTO page_templates (id, application_id, pattern, provenance)
+       VALUES ($1,$2,$3,$4::jsonb)
+       ON CONFLICT (application_id, pattern) DO NOTHING`,
+      [t.id, t.applicationId, t.pattern, JSON.stringify(t.provenance)],
+    );
+  }
+  
+  export async function insertPageInstance(db: Db, p: PageInstance): Promise<void> {
+    await db.query(
+      `INSERT INTO page_instances (id, page_template_id, application_id, url, provenance)
+       VALUES ($1,$2,$3,$4,$5::jsonb)`,
+      [p.id, p.pageTemplateId ?? null, p.applicationId, p.url, JSON.stringify(p.provenance)],
     );
   }

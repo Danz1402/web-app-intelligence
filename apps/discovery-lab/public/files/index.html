@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Discovery Lab — Files</title>
+  </head>
+  <body>
+    <h1>Files</h1>
+    <p>full document · download and upload</p>
+    <a href="/">Home</a>
+
+    <h2>Direct download</h2>
+    <a href="/api/download/report.txt" download>Download report</a>
+
+    <h2>Generated download</h2>
+    <button type="button" id="gen-download">Download generated CSV</button>
+
+    <h2>Upload</h2>
+    <p id="upload-result" role="status" hidden>Upload complete</p>
+    <form id="upload-form" action="/api/upload" method="post" enctype="multipart/form-data">
+      <input type="file" name="file" accept=".txt,.csv" />
+      <button type="submit">Upload</button>
+    </form>
+
+    <script src="/files.js"></script>
+  </body>
+</html>

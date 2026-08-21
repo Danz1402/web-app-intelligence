@@ -24,23 +24,22 @@ export function findExactState(
 export function findNearState(
   known: KnownStateSignature[],
   signature: StateSignature,
-  opts: { ignoreTextFingerprint?: boolean } = { ignoreTextFingerprint: true },
 ): KnownStateSignature | undefined {
-  const routeKey = normalizePathname(
-    `https://dummy.local${signature.pathname}${signature.search}`,
-  );
-  // normalizeApiUrl expects full URL or path — adjust if your helper only takes pathnames:
-  // prefer: normalize pathname segments only
   const normalizedPath = normalizePathname(signature.pathname);
 
   return known.find((k) => {
-    if (normalizePathname(k.signature.pathname) !== normalizedPath) return false;
+    const kNormalized = normalizePathname(k.signature.pathname);
+
+    // Same exact pathname → not an instance-route duplicate (variants must be new states)
+    if (k.signature.pathname === signature.pathname) return false;
+
+    // Different pathnames that generalize to the same template, e.g. /items/1 vs /items/2
+    if (kNormalized !== normalizedPath) return false;
+
     if (k.signature.title !== signature.title) return false;
     if (k.signature.dialogFingerprint !== signature.dialogFingerprint) return false;
     if (k.signature.urlHash !== signature.urlHash) return false;
-    if (!opts.ignoreTextFingerprint) {
-      if (k.signature.textFingerprint !== signature.textFingerprint) return false;
-    }
+    // Instance routes: ignore textFingerprint (different row content is OK to collapse for now)
     return true;
   });
 }

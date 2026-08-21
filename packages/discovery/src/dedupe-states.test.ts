@@ -44,6 +44,7 @@ test("near match treats /customers/1 and /customers/2 as same template path", ()
   const hit = findNearState([{ id: stateId, signature: a }], b);
   assert.ok(hit);
   assert.equal(hit?.id, stateId);
+  assert.equal(a, hit?.signature);
 });
 
 test("different title is not near", () => {
@@ -71,4 +72,12 @@ test("resolveStateIdentity prefers exact then near then new", () => {
     sig({ pathname: "/orders/1", title: "Order", signatureHash: "new" }),
   );
   assert.equal(fresh.kind, "new");
+});
+
+test("same pathname with different text is not near", () => {
+  const a = sig({ pathname: "/ui", textFingerprint: "overview", signatureHash: "h1" });
+  const b = sig({ pathname: "/ui", textFingerprint: "details", signatureHash: "h2" });
+  const hit = findNearState([{ id: Ids.state(), signature: a }], b);
+  assert.equal(hit, undefined);
+  assert.equal(resolveStateIdentity([{ id: Ids.state(), signature: a }], b).kind, "new");
 });
